@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@material-tailwind/react";
+import Providers from "./context/providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,13 +17,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <header className="bg-light-blue-700 p-4 text-lg text-white ">
-          Portfolio manager
-        </header>
-        {children}
-      </body>
-    </html>
+    <Providers>
+      <html lang="en">
+        <body className={inter.className}>
+          <header className="bg-light-blue-700 p-4 text-lg text-white ">
+            Portfolio manager
+          </header>
+          {children}
+        </body>
+      </html>
+    </Providers>
   );
 }

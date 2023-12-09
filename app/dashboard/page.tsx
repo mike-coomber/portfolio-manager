@@ -1,18 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { getAllWork } from "../data/api";
 import { Work } from "../data/models";
-import { WorkCard } from "../components/work-card";
+import { WorkCard } from "./components/work-card";
+import { WorkContext } from "../context/contexts";
 
 export default function Page() {
-  const [work, setWork] = useState<Work[]>([]);
-
-  useEffect(() => {
-    getAllWork().then((work) => {
-      setWork(work);
-    });
-  }, []);
+  const work = useContext(WorkContext);
 
   return (
     <div>
