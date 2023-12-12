@@ -2,10 +2,10 @@
 import { useEffect, useState } from "react";
 import { WorkContext } from "../context/contexts";
 import { getAllWork } from "../data/api";
-import { Work } from "../data/models";
+import { ProjectInterface } from "../data/models";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const [work, setWork] = useState<Work[]>([]);
+  const [work, setWork] = useState<ProjectInterface[]>([]);
 
   useEffect(() => {
     getAllWork().then((work) => {

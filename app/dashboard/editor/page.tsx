@@ -1,16 +1,16 @@
 "use client";
 import { WorkContext } from "@/app/context/contexts";
 import { getAllImages } from "@/app/data/api";
-import { Work, Page, WorkImage } from "@/app/data/models";
+import { PageModel, ProjectImageModel, ProjectModel } from "@/app/data/models";
 import { Input, Textarea, Typography } from "@material-tailwind/react";
 import { useSearchParams } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 
 export default function Page() {
-  const [work, setWork] = useState<Work | undefined>();
-  const [currentPage, setCurrentPage] = useState<Page>();
-  const [allImages, setAllImages] = useState<WorkImage[]>([]);
+  const [work, setWork] = useState<ProjectModel | undefined>();
+  const [currentPage, setCurrentPage] = useState<PageModel>();
+  const [allImages, setAllImages] = useState<ProjectImageModel[]>([]);
 
   const allWork = useContext(WorkContext);
   const queryParams = useSearchParams();
@@ -44,8 +44,8 @@ function PageSelector({
   pages,
   onPageSelected,
 }: {
-  pages: Page[];
-  onPageSelected: (page: Page) => void;
+  pages: PageModel[];
+  onPageSelected: (page: PageModel) => void;
 }) {
   return (
     <div className="px-4 py-2 bg-white shadow-md flex-initial w-40">
@@ -61,11 +61,25 @@ function PageSelector({
   );
 }
 
-function PageView({ page }: { page: Page }) {
-  return <div className="flex-1 bg-red-50"></div>;
+function PageView({ page }: { page: PageModel }) {
+  console.log(page);
+  return (
+    <div className="flex-1 bg-red-50 p-12">
+      <Typography>Page preview</Typography>
+      {page.images.map((image) => (
+        <Image
+          width={80}
+          height={80}
+          src={image.url}
+          alt={image.name}
+          className="h-auto w-auto"
+        />
+      ))}
+    </div>
+  );
 }
 
-function ImageViewer({ images }: { images: WorkImage[] }) {
+function ImageViewer({ images }: { images: ProjectImageModel[] }) {
   return (
     <div className="shadow-md flex-initial bg-white">
       {images.map((image) => (
@@ -78,7 +92,7 @@ function ImageViewer({ images }: { images: WorkImage[] }) {
   );
 }
 
-function TopBar({ work }: { work: Work }) {
+function TopBar({ work }: { work: ProjectModel }) {
   return (
     <form
       onChange={(e) => {

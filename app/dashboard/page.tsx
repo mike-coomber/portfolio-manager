@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useContext } from "react";
 import { getAllWork } from "../data/api";
-import { Work } from "../data/models";
+import { ProjectInterface } from "../data/models";
 import { WorkCard } from "./components/work-card";
 import { WorkContext } from "../context/contexts";
 

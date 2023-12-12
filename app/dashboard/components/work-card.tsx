@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Work } from "../../data/models";
+import { ProjectModel } from "../../data/models";
 import {
   Card,
   CardHeader,
@@ -10,7 +10,7 @@ import {
 } from "@material-tailwind/react";
 import Link from "next/link";
 
-export function WorkCard({ data }: { data: Work }) {
+export function WorkCard({ data }: { data: ProjectModel }) {
   return (
     <Link href={`dashboard/editor?id=${data.id}`}>
       <Card className="m-4 flex">
@@ -20,7 +20,7 @@ export function WorkCard({ data }: { data: Work }) {
           </Typography>
           <Image
             className="py-2 justify-center flex"
-            src={data.image}
+            src={data.imageUrl}
             alt={`Image for ${data.name}`}
             width={600}
             height={400}
