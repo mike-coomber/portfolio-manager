@@ -2,15 +2,17 @@
 import { WorkContext } from "@/app/context/contexts";
 import { getAllImages } from "@/app/data/api";
 import { PageModel, ProjectImageModel, ProjectModel } from "@/app/data/models";
-import { Input, Textarea, Typography } from "@material-tailwind/react";
+import { Button, Input, Textarea, Typography } from "@material-tailwind/react";
 import { useSearchParams } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import Image from "next/image";
+import { ImagePickerDialog } from "./components/image-picker-dialog";
 
 export default function Page() {
   const [work, setWork] = useState<ProjectModel | undefined>();
   const [currentPage, setCurrentPage] = useState<PageModel>();
   const [allImages, setAllImages] = useState<ProjectImageModel[]>([]);
+  const [imagePickerOpen, setImagePickerOpen] = useState(false);
 
   const allWork = useContext(WorkContext);
   const queryParams = useSearchParams();
@@ -33,9 +35,18 @@ export default function Page() {
       <TopBar work={work} />
       <div className="flex">
         <PageSelector pages={work.pages} onPageSelected={setCurrentPage} />
-        {currentPage != undefined && <PageView page={currentPage} />}
-        <ImageViewer images={allImages} />
+        {currentPage != undefined && (
+          <PageView
+            page={currentPage}
+            setImagePickerOpen={setImagePickerOpen}
+          />
+        )}
       </div>
+      <ImagePickerDialog
+        open={imagePickerOpen}
+        setOpen={setImagePickerOpen}
+        images={allImages}
+      />
     </div>
   );
 }
@@ -51,6 +62,7 @@ function PageSelector({
     <div className="px-4 py-2 bg-white shadow-md flex-initial w-40">
       {pages.map((page, index) => (
         <div
+          key={index}
           className="p-2 cursor-pointer"
           onClick={() => onPageSelected(page)}
         >
@@ -61,33 +73,32 @@ function PageSelector({
   );
 }
 
-function PageView({ page }: { page: PageModel }) {
-  console.log(page);
+function PageView({
+  page,
+  setImagePickerOpen,
+}: {
+  page: PageModel;
+  setImagePickerOpen: Function;
+}) {
   return (
     <div className="flex-1 bg-red-50 p-12">
       <Typography>Page preview</Typography>
-      {page.images.map((image) => (
-        <Image
-          width={80}
-          height={80}
-          src={image.url}
-          alt={image.name}
-          className="h-auto w-auto"
-        />
-      ))}
-    </div>
-  );
-}
-
-function ImageViewer({ images }: { images: ProjectImageModel[] }) {
-  return (
-    <div className="shadow-md flex-initial bg-white">
-      {images.map((image) => (
-        <div className="flex px-4 py-4">
-          <Image src={image.url} height={40} width={40} alt="image.name" />
-          <Typography className="ml-4">{image.name}</Typography>
-        </div>
-      ))}
+      <Button variant="text" onClick={() => setImagePickerOpen(true)}>
+        Open Image Picker
+      </Button>
+      <div className="flex">
+        {page.images.map((image) => (
+          <Image
+            key={image.name}
+            src={image.url}
+            alt={image.name}
+            width={400}
+            height={400}
+            className="flex-1 p-2"
+            style={{ maxHeight: 400, objectFit: "contain" }}
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -96,9 +107,7 @@ function TopBar({ work }: { work: ProjectModel }) {
   return (
     <form
       onChange={(e) => {
-        console.log(e);
         const formData = new FormData(e.currentTarget);
-        console.log(formData);
       }}
     >
       <div className="p-6 bg-white flex shadow-md">

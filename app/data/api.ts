@@ -33,6 +33,6 @@ export async function getAllImages(
       return new ProjectImageModel(item.name, url);
     })
   );
-  console.log(images);
+
   return images;
 }
