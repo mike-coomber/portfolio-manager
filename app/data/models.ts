@@ -28,6 +28,10 @@ export class ProjectModel {
     this.pages = pages;
   }
 
+  static empty(): ProjectModel {
+    return new ProjectModel("", "", "", "", "", "", []);
+  }
+
   static async fromInterface(
     id: string,
     projectInterface: ProjectInterface

@@ -1,6 +1,6 @@
-import { createContext, useContext } from "react";
-import { ProjectInterface } from "../data/models";
+import { createContext } from "react";
+import { ProjectModel } from "../data/models";
 
-const WorkContext = createContext<ProjectInterface[]>([]);
+const WorkContext = createContext<ProjectModel[]>([]);
 
 export { WorkContext };
