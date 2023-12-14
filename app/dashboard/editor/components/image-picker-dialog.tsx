@@ -1,5 +1,4 @@
-"use client";
-import React from "react";
+import React, { createRef, useRef } from "react";
 import {
   Button,
   Dialog,
@@ -10,42 +9,50 @@ import {
 } from "@material-tailwind/react";
 import Image from "next/image";
 import { ProjectImageModel } from "@/app/data/models";
+// import { writeFile } from "fs/promises";
 
 export function ImagePickerDialog({
   open,
   setOpen,
   images,
+  setImages,
 }: ImagePickerDialogProps) {
   const numRows = Math.ceil(images.length / 4);
+
+  const imageComponents = images.map((image, index) => (
+    <div
+      key={index}
+      className="flex flex-col jusify-center items-center text-center cursor-pointer hover:bg-sky-700"
+    >
+      <Image
+        src={image.url}
+        height={100}
+        width={100}
+        alt={image.name}
+        className="flex"
+        style={{
+          flex: 2,
+          minHeight: 100,
+          minWidth: 100,
+          objectFit: "contain",
+        }}
+      />
+      <Typography className="ml-4 flex" style={{ flex: 1 }}>
+        {image.name}
+      </Typography>
+    </div>
+  ));
+
+  imageComponents.push(
+    <UploadTile onImageUploaded={(img) => setImages([...images, img])} />
+  );
 
   return (
     <>
       <Dialog open={open} handler={setOpen}>
         <DialogHeader>Its a simple dialog.</DialogHeader>
         <DialogBody className={`grid grid-cols-4 grid-rows-${numRows} gap-4`}>
-          {images.map((image, index) => (
-            <div
-              key={index}
-              className="flex flex-col jusify-center items-center text-center cursor-pointer hover:bg-sky-700"
-            >
-              <Image
-                src={image.url}
-                height={100}
-                width={100}
-                alt={image.name}
-                className="flex"
-                style={{
-                  flex: 2,
-                  minHeight: 100,
-                  minWidth: 100,
-                  objectFit: "contain",
-                }}
-              />
-              <Typography className="ml-4 flex" style={{ flex: 1 }}>
-                {image.name}
-              </Typography>
-            </div>
-          ))}
+          {...imageComponents}
         </DialogBody>
         <DialogFooter>
           <Button
@@ -72,4 +79,41 @@ interface ImagePickerDialogProps {
   open: boolean;
   setOpen: (val: boolean) => void;
   images: ProjectImageModel[];
+  setImages: (val: ProjectImageModel[]) => void;
+}
+
+function UploadTile({
+  onImageUploaded,
+}: {
+  onImageUploaded: (img: ProjectImageModel) => void;
+}) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function uploadFile(file: File) {
+    const fileBuffer = Buffer.from(await file.arrayBuffer());
+    const path = `temp/${file.name}`;
+    // await writeFile(path, fileBuffer);
+
+    onImageUploaded(new ProjectImageModel(file.name, "/" + path));
+  }
+
+  return (
+    <div
+      className="border-2 border-dashed border-black flex items-center justify-center cursor-pointer"
+      onClick={() => fileInputRef?.current?.click()}
+    >
+      <Typography>Upload Image</Typography>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".png, .jpg, .gif"
+        className="w-full h-full absolute cursor-pointer hidden"
+        onChange={(e) => {
+          if (e.target.files != null) {
+            uploadFile(e.target.files[0]);
+          }
+        }}
+      />
+    </div>
+  );
 }

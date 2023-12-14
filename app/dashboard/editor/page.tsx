@@ -63,6 +63,7 @@ export default function Page() {
           open={imagePickerOpen}
           setOpen={setImagePickerOpen}
           images={allImages}
+          setImages={setAllImages}
         />
       </div>
     </ProjectContext.Provider>
@@ -164,6 +165,7 @@ function TopBar() {
                 project.name = event.target.value;
                 setProject(project);
               }}
+              className="cursor-text"
               variant="static"
               crossOrigin={""}
             />
@@ -174,6 +176,7 @@ function TopBar() {
               label="Services"
               name="services"
               defaultValue={project.services}
+              className="cursor-text"
               variant="static"
               crossOrigin={""}
             />
@@ -183,6 +186,7 @@ function TopBar() {
           <Textarea
             name="description"
             label="Description"
+            className="cursor-text"
             defaultValue={project.description}
           />
         </div>
