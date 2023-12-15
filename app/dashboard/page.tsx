@@ -10,7 +10,7 @@ export default function Page() {
   return (
     <div>
       {projects.map((projectModel) => (
-        <ProjectCard data={projectModel} />
+        <ProjectCard key={projectModel.id} data={projectModel} />
       ))}
     </div>
   );

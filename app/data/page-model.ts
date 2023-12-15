@@ -4,13 +4,13 @@ import { ProjectImageModel } from "./project-image-model";
 
 export class PageModel {
   images: ProjectImageModel[];
-  backgroundColor: string;
+  backgroundColor: string | undefined;
   pageNumber: number;
 
   constructor(
     images: ProjectImageModel[],
-    backgroundColor: string,
-    pageNumber: number
+    pageNumber: number,
+    backgroundColor?: string
   ) {
     this.images = images;
     this.backgroundColor = backgroundColor;
@@ -27,7 +27,7 @@ export class PageModel {
       })
     );
 
-    return new PageModel(images, pageInterface.backgroundColor, pageNumber);
+    return new PageModel(images, pageNumber, pageInterface.backgroundColor);
   }
 }
 

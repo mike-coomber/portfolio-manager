@@ -108,6 +108,7 @@ function UploadTile({
 
   return (
     <div
+      key={"upload-tile"}
       className="border-2 border-dashed border-black flex items-center justify-center cursor-pointer"
       onClick={() => fileInputRef?.current?.click()}
     >
