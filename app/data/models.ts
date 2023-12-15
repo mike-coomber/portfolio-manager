@@ -86,10 +86,12 @@ export class PageModel {
 
 export class ProjectImageModel {
   name: string;
+  firebaseLocaiton: string;
   url: string;
 
-  constructor(name: string, url: string) {
+  constructor(name: string, firebaseLocaiton: string, url: string) {
     this.name = name;
+    this.firebaseLocaiton = firebaseLocaiton;
     this.url = url;
   }
 
@@ -100,6 +102,6 @@ export class ProjectImageModel {
     const splitLocation = location.split("/");
     const name = splitLocation[splitLocation.length - 1];
 
-    return new ProjectImageModel(name, url);
+    return new ProjectImageModel(name, location, url);
   }
 }

@@ -1,4 +1,4 @@
-import React, { createRef, useRef } from "react";
+import React, { createRef, useContext, useRef } from "react";
 import {
   Button,
   Dialog,
@@ -9,7 +9,15 @@ import {
 } from "@material-tailwind/react";
 import Image from "next/image";
 import { ProjectImageModel } from "@/app/data/models";
-// import { writeFile } from "fs/promises";
+import { uploadImage } from "@/app/data/api";
+import { ProjectContext } from "../context";
+
+interface ImagePickerDialogProps {
+  open: boolean;
+  setOpen: (val: boolean) => void;
+  images: ProjectImageModel[];
+  setImages: (val: ProjectImageModel[]) => void;
+}
 
 export function ImagePickerDialog({
   open,
@@ -75,26 +83,21 @@ export function ImagePickerDialog({
   );
 }
 
-interface ImagePickerDialogProps {
-  open: boolean;
-  setOpen: (val: boolean) => void;
-  images: ProjectImageModel[];
-  setImages: (val: ProjectImageModel[]) => void;
-}
-
 function UploadTile({
   onImageUploaded,
 }: {
   onImageUploaded: (img: ProjectImageModel) => void;
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { project } = useContext(ProjectContext);
 
   async function uploadFile(file: File) {
     const fileBuffer = Buffer.from(await file.arrayBuffer());
-    const path = `temp/${file.name}`;
-    // await writeFile(path, fileBuffer);
 
-    onImageUploaded(new ProjectImageModel(file.name, "/" + path));
+    const location = `maddy/${project.id}/${file.name}`;
+    const url = await uploadImage(file, location);
+
+    onImageUploaded(new ProjectImageModel(file.name, location, url));
   }
 
   return (

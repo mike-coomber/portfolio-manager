@@ -1,7 +1,13 @@
 import { collection, getDocs } from "firebase/firestore";
 import { db, storage } from "../../firebase";
 import { ProjectImageModel, ProjectModel } from "./models";
-import { getDownloadURL, listAll, ref } from "firebase/storage";
+import {
+  getDownloadURL,
+  listAll,
+  ref,
+  uploadBytes,
+  uploadBytesResumable,
+} from "firebase/storage";
 import { ProjectInterface } from "./interfaces";
 
 export async function getAllWork(): Promise<ProjectModel[]> {
@@ -22,17 +28,35 @@ export async function getImageUrl(url: string): Promise<string> {
 }
 
 export async function getAllImages(
-  workId: string
+  projectId: string
 ): Promise<ProjectImageModel[]> {
-  const storageRef = ref(storage, `maddy/${workId}`);
+  const storageRef = ref(storage, `maddy/${projectId}`);
 
   const allFiles = await listAll(storageRef);
   const images = await Promise.all(
     allFiles.items.map(async (item) => {
       const url = await getImageUrl(item.fullPath);
-      return new ProjectImageModel(item.name, url);
+      return new ProjectImageModel(item.name, item.fullPath, url);
     })
   );
 
   return images;
+}
+
+export async function uploadImage(
+  file: File,
+  location: string
+): Promise<string> {
+  const storageRef = ref(storage, location);
+  const metaData = {
+    contentType: `${file.type}`,
+  };
+
+  const uploadTask = await uploadBytes(
+    storageRef,
+    await file.arrayBuffer(),
+    metaData
+  );
+
+  return await getImageUrl(uploadTask.ref.fullPath);
 }
