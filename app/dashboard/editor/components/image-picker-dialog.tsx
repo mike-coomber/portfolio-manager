@@ -10,23 +10,21 @@ import {
 import Image from "next/image";
 import { ProjectImageModel } from "@/app/data/project-image-model";
 import { uploadImage } from "@/app/api/api";
-import { ProjectContext } from "../context";
+import { ImagesContext, ProjectContext } from "../context";
 
 interface ImagePickerDialogProps {
   open: boolean;
   setOpen: (val: boolean) => void;
-  images: ProjectImageModel[];
   onImageSelected: ((img: ProjectImageModel) => void) | undefined;
-  setImages: (val: ProjectImageModel[]) => void;
 }
 
 export function ImagePickerDialog({
   open,
   setOpen,
-  images,
-  setImages,
   onImageSelected,
 }: ImagePickerDialogProps) {
+  const { images, setImages } = useContext(ImagesContext);
+
   const numRows = Math.ceil(images.length / 4);
 
   const imageComponents = images.map((image, index) => (

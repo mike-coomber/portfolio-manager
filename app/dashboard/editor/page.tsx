@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import { ImagePickerDialog } from "./components/image-picker-dialog";
-import { ProjectContext } from "./context";
+import { ImagesContext, ProjectContext } from "./context";
 import { PageModel } from "@/app/data/page-model";
 import { ProjectModel } from "@/app/data/project-model";
 
@@ -15,7 +15,6 @@ export default function Page() {
   const [project, setProject] = useState<ProjectModel>();
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [allImages, setAllImages] = useState<ProjectImageModel[]>([]);
-  const [imagePickerOpen, setImagePickerOpen] = useState(false);
 
   const allProjects = useContext(ProjectsContext);
   const queryParams = useSearchParams();
@@ -37,41 +36,25 @@ export default function Page() {
 
   return (
     <ProjectContext.Provider value={{ project, setProject }}>
-      <div className="h-full">
-        <TopBar />
-        <div className="flex h-full">
-          <PageSelector onPageSelected={setCurrentPageIndex} />
-          {currentPageIndex != undefined && (
-            <PageView
-              pageIndex={currentPageIndex}
-              setImagePickerOpen={setImagePickerOpen}
-            />
-          )}
-        </div>
-      </div>
-      <footer
-        className="flex w-full bg-white p-4 justify-end"
-        onClick={() => writeProject(project)}
+      <ImagesContext.Provider
+        value={{ images: allImages, setImages: setAllImages }}
       >
-        <Button>Save</Button>
-      </footer>
-      <ImagePickerDialog
-        open={imagePickerOpen}
-        setOpen={setImagePickerOpen}
-        images={allImages}
-        setImages={setAllImages}
-        onImageSelected={(newImage) => {
-          const page = project.pages[currentPageIndex];
-
-          const newPage: PageModel = {
-            ...page,
-            images: [...page.images, newImage],
-          };
-          const newPages = project.pages.filter((val) => val != page);
-          newPages.splice(currentPageIndex, 0, newPage);
-          setProject({ ...project, pages: newPages });
-        }}
-      />
+        <div className="h-full">
+          <TopBar />
+          <div className="flex h-full">
+            <PageSelector onPageSelected={setCurrentPageIndex} />
+            {currentPageIndex != undefined && (
+              <PageView pageIndex={currentPageIndex} />
+            )}
+          </div>
+        </div>
+        <footer
+          className="flex w-full bg-white p-4 justify-end"
+          onClick={() => writeProject(project)}
+        >
+          <Button>Save</Button>
+        </footer>
+      </ImagesContext.Provider>
     </ProjectContext.Provider>
   );
 }
@@ -100,13 +83,8 @@ function PageSelector({
   );
 }
 
-function PageView({
-  pageIndex,
-  setImagePickerOpen,
-}: {
-  pageIndex: number;
-  setImagePickerOpen: Function;
-}) {
+function PageView({ pageIndex }: { pageIndex: number }) {
+  const [imagePickerOpen, setImagePickerOpen] = useState(false);
   const { project, setProject } = useContext(ProjectContext);
 
   return (
@@ -146,17 +124,36 @@ function PageView({
           </div>
         ))}
       </div>
+      <ImagePickerDialog
+        open={imagePickerOpen}
+        setOpen={setImagePickerOpen}
+        onImageSelected={(newImage) => {
+          const page = project.pages[pageIndex];
+
+          const newPage: PageModel = {
+            ...page,
+            images: [...page.images, newImage],
+          };
+          const newPages = project.pages.filter((val) => val != page);
+          newPages.splice(pageIndex, 0, newPage);
+          setProject({ ...project, pages: newPages });
+        }}
+      />
     </div>
   );
 }
 
 function TopBar() {
+  const [imagePickerOpen, setImagePickerOpen] = useState(false);
   const { project, setProject } = useContext(ProjectContext);
 
   return (
     <form>
       <div className="p-6 bg-white flex shadow-md">
-        <div className="mr-4 cursor-pointer relative flex justify-center">
+        <div
+          className="mr-4 cursor-pointer relative flex justify-center"
+          onClick={() => setImagePickerOpen(true)}
+        >
           <div className="opacity-0 hover:opacity-100 flex absolute left-0 right-0 top-0 bottom-0 items-center justify-center bg-blue-gray-500 bg-opacity-80 z-10">
             <Typography color="white">Change</Typography>
           </div>
@@ -183,8 +180,7 @@ function TopBar() {
               name="name"
               defaultValue={project.name}
               onChange={(event) => {
-                project.name = event.target.value;
-                setProject(project);
+                setProject({ ...project, name: event.target.value });
               }}
               className="cursor-text"
               variant="static"
@@ -198,8 +194,7 @@ function TopBar() {
               name="services"
               defaultValue={project.services}
               onChange={(event) => {
-                project.services = event.target.value;
-                setProject(project);
+                setProject({ ...project, services: event.target.value });
               }}
               className="cursor-text"
               variant="static"
@@ -213,13 +208,19 @@ function TopBar() {
             label="Description"
             className="cursor-text"
             onChange={(event) => {
-              project.description = event.target.value;
-              setProject(project);
+              setProject({ ...project, description: event.target.value });
             }}
             defaultValue={project.description}
           />
         </div>
       </div>
+      <ImagePickerDialog
+        open={imagePickerOpen}
+        setOpen={setImagePickerOpen}
+        onImageSelected={(newImage) => {
+          setProject({ ...project, image: newImage });
+        }}
+      />
     </form>
   );
 }
