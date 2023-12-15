@@ -22,11 +22,14 @@ export default function Page() {
   const allProjects = useContext(ProjectsContext);
   const queryParams = useSearchParams();
 
+  let indexOfProject = 0;
+
   useEffect(() => {
     const id = queryParams.get("id");
     const match = allProjects.find((work) => work.id == id);
 
     if (match != undefined) {
+      indexOfProject = allProjects.indexOf(match);
       setProject({ ...match }); // Copy project by value so the original is not modified
     }
 
@@ -54,7 +57,10 @@ export default function Page() {
           </div>
           <footer
             className="flex w-full bg-white p-4 justify-end"
-            onClick={() => writeProject(project)}
+            onClick={() => {
+              allProjects[indexOfProject] = project;
+              writeProject(project);
+            }}
           >
             <Button>Save</Button>
           </footer>

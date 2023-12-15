@@ -35,7 +35,7 @@ export function pageModelToFirestore(
   page: PageModel
 ): WithFieldValue<DocumentData> {
   return {
-    backgroundColor: page.backgroundColor,
+    ...(page.backgroundColor && { backgroundColor: page.backgroundColor }),
     images: page.images.map((image) => image.firebaseLocaiton),
   };
 }

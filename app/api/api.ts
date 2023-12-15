@@ -57,6 +57,11 @@ export async function uploadImage(
 }
 
 export async function writeProject(projectModel: ProjectModel) {
+  // Remove any pages without any images
+  projectModel.pages = projectModel.pages.filter(
+    (pages) => pages.images.length > 0
+  );
+
   await setDoc(
     doc(db, `work/${projectModel.id}`),
     projectModelToFirestore(projectModel)
