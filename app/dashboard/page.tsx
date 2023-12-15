@@ -1,18 +1,16 @@
 "use client";
 
-import { useState, useEffect, useContext } from "react";
-import { getAllWork } from "../data/api";
-import { ProjectInterface } from "../data/models";
-import { WorkCard } from "./components/work-card";
-import { WorkContext } from "../context/contexts";
+import { useContext } from "react";
+import { ProjectCard } from "./components/work-card";
+import { ProjectsContext } from "../context/contexts";
 
 export default function Page() {
-  const work = useContext(WorkContext);
+  const projects = useContext(ProjectsContext);
 
   return (
     <div>
-      {work.map((workObj) => (
-        <WorkCard data={workObj} />
+      {projects.map((projectModel) => (
+        <ProjectCard data={projectModel} />
       ))}
     </div>
   );

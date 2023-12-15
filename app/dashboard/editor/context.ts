@@ -1,4 +1,4 @@
-import { ProjectModel } from "@/app/data/models";
+import { ProjectModel } from "@/app/data/project-model";
 import { createContext } from "react";
 
 interface ProjectContextModel {

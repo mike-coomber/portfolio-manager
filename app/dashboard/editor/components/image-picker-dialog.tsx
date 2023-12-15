@@ -8,14 +8,15 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import Image from "next/image";
-import { ProjectImageModel } from "@/app/data/models";
-import { uploadImage } from "@/app/data/api";
+import { ProjectImageModel } from "@/app/data/project-image-model";
+import { uploadImage } from "@/app/api/api";
 import { ProjectContext } from "../context";
 
 interface ImagePickerDialogProps {
   open: boolean;
   setOpen: (val: boolean) => void;
   images: ProjectImageModel[];
+  onImageSelected: ((img: ProjectImageModel) => void) | undefined;
   setImages: (val: ProjectImageModel[]) => void;
 }
 
@@ -24,6 +25,7 @@ export function ImagePickerDialog({
   setOpen,
   images,
   setImages,
+  onImageSelected,
 }: ImagePickerDialogProps) {
   const numRows = Math.ceil(images.length / 4);
 
@@ -31,6 +33,12 @@ export function ImagePickerDialog({
     <div
       key={index}
       className="flex flex-col jusify-center items-center text-center cursor-pointer hover:bg-sky-700"
+      onClick={() => {
+        if (onImageSelected != undefined) {
+          onImageSelected(image);
+        }
+        setOpen(false);
+      }}
     >
       <Image
         src={image.url}

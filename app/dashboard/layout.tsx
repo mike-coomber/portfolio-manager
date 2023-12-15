@@ -1,17 +1,21 @@
 "use client";
 import { useEffect, useState } from "react";
-import { WorkContext } from "../context/contexts";
-import { getAllWork } from "../data/api";
-import { ProjectInterface } from "../data/models";
+import { ProjectsContext } from "../context/contexts";
+import { getAllWork } from "../api/api";
+import { ProjectModel } from "../data/project-model";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const [work, setWork] = useState<ProjectInterface[]>([]);
+  const [projects, setProjects] = useState<ProjectModel[]>([]);
 
   useEffect(() => {
     getAllWork().then((work) => {
-      setWork(work);
+      setProjects(work);
     });
   }, []);
 
-  return <WorkContext.Provider value={work}>{children}</WorkContext.Provider>;
+  return (
+    <ProjectsContext.Provider value={projects}>
+      {children}
+    </ProjectsContext.Provider>
+  );
 }

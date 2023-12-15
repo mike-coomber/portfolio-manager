@@ -1,26 +1,15 @@
 "use client";
-import { WorkContext } from "@/app/context/contexts";
-import { getAllImages } from "@/app/data/api";
-import { PageModel, ProjectImageModel, ProjectModel } from "@/app/data/models";
-import {
-  Button,
-  IconButton,
-  Input,
-  Textarea,
-  Typography,
-} from "@material-tailwind/react";
+import { ProjectsContext } from "@/app/context/contexts";
+import { getAllImages, writeProject } from "@/app/api/api";
+import { ProjectImageModel } from "@/app/data/project-image-model";
+import { Button, Input, Textarea, Typography } from "@material-tailwind/react";
 import { useSearchParams } from "next/navigation";
-import {
-  ChangeEventHandler,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import { ImagePickerDialog } from "./components/image-picker-dialog";
 import { ProjectContext } from "./context";
-import { pages } from "next/dist/build/templates/app-page";
+import { PageModel } from "@/app/data/page-model";
+import { ProjectModel } from "@/app/data/project-model";
 
 export default function Page() {
   const [project, setProject] = useState<ProjectModel>();
@@ -28,12 +17,12 @@ export default function Page() {
   const [allImages, setAllImages] = useState<ProjectImageModel[]>([]);
   const [imagePickerOpen, setImagePickerOpen] = useState(false);
 
-  const allWork = useContext(WorkContext);
+  const allProjects = useContext(ProjectsContext);
   const queryParams = useSearchParams();
 
   useEffect(() => {
     const id = queryParams.get("id");
-    const match = allWork.find((work) => work.id == id);
+    const match = allProjects.find((work) => work.id == id);
 
     if (match != undefined) {
       setProject({ ...match }); // Copy project by value so the original is not modified
@@ -50,7 +39,7 @@ export default function Page() {
     <ProjectContext.Provider value={{ project, setProject }}>
       <div className="h-full">
         <TopBar />
-        <div className="flex">
+        <div className="flex h-full">
           <PageSelector onPageSelected={setCurrentPageIndex} />
           {currentPageIndex != undefined && (
             <PageView
@@ -59,13 +48,30 @@ export default function Page() {
             />
           )}
         </div>
-        <ImagePickerDialog
-          open={imagePickerOpen}
-          setOpen={setImagePickerOpen}
-          images={allImages}
-          setImages={setAllImages}
-        />
       </div>
+      <footer
+        className="flex w-full bg-white p-4 justify-end"
+        onClick={() => writeProject(project)}
+      >
+        <Button>Save</Button>
+      </footer>
+      <ImagePickerDialog
+        open={imagePickerOpen}
+        setOpen={setImagePickerOpen}
+        images={allImages}
+        setImages={setAllImages}
+        onImageSelected={(newImage) => {
+          const page = project.pages[currentPageIndex];
+
+          const newPage: PageModel = {
+            ...page,
+            images: [...page.images, newImage],
+          };
+          const newPages = project.pages.filter((val) => val != page);
+          newPages.splice(currentPageIndex, 0, newPage);
+          setProject({ ...project, pages: newPages });
+        }}
+      />
     </ProjectContext.Provider>
   );
 }
@@ -76,7 +82,7 @@ function PageSelector({
   onPageSelected: (pageIndex: number) => void;
 }) {
   const { project } = useContext(ProjectContext);
-  console.log(project);
+
   const pages = project.pages;
 
   return (
@@ -125,14 +131,14 @@ function PageView({
               variant="text"
               onClick={() => {
                 const page = project.pages[pageIndex];
+
                 const newImages = page.images.filter((val) => val != image);
                 const newPage: PageModel = { ...page, images: newImages };
 
                 const newPages = project.pages.filter((val) => val != page);
+
                 newPages.splice(pageIndex, 0, newPage);
-                console.log(project);
                 setProject({ ...project, pages: newPages });
-                console.log(project);
               }}
             >
               Remove
@@ -148,12 +154,27 @@ function TopBar() {
   const { project, setProject } = useContext(ProjectContext);
 
   return (
-    <form
-      onChange={(e) => {
-        console.log(project);
-      }}
-    >
+    <form>
       <div className="p-6 bg-white flex shadow-md">
+        <div className="mr-4 cursor-pointer relative flex justify-center">
+          <div className="opacity-0 hover:opacity-100 flex absolute left-0 right-0 top-0 bottom-0 items-center justify-center bg-blue-gray-500 bg-opacity-80 z-10">
+            <Typography color="white">Change</Typography>
+          </div>
+          {project.image != undefined && (
+            <Image
+              src={project.image.url}
+              height={100}
+              width={100}
+              alt={project.image.name}
+              className="flex"
+              style={{
+                minHeight: 100,
+                minWidth: 100,
+                objectFit: "contain",
+              }}
+            />
+          )}
+        </div>
         <div className="flex-col flex-1">
           <div className="flex-3">
             <Input
@@ -176,6 +197,10 @@ function TopBar() {
               label="Services"
               name="services"
               defaultValue={project.services}
+              onChange={(event) => {
+                project.services = event.target.value;
+                setProject(project);
+              }}
               className="cursor-text"
               variant="static"
               crossOrigin={""}
@@ -187,6 +212,10 @@ function TopBar() {
             name="description"
             label="Description"
             className="cursor-text"
+            onChange={(event) => {
+              project.description = event.target.value;
+              setProject(project);
+            }}
             defaultValue={project.description}
           />
         </div>

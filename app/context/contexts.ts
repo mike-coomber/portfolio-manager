@@ -1,6 +1,6 @@
 import { createContext } from "react";
-import { ProjectModel } from "../data/models";
+import { ProjectModel } from "../data/project-model";
 
-const WorkContext = createContext<ProjectModel[]>([]);
+const ProjectsContext = createContext<ProjectModel[]>([]);
 
-export { WorkContext };
+export { ProjectsContext };

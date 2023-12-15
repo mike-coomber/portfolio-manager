@@ -1,14 +1,9 @@
-import { collection, getDocs } from "firebase/firestore";
+import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { db, storage } from "../../firebase";
-import { ProjectImageModel, ProjectModel } from "./models";
-import {
-  getDownloadURL,
-  listAll,
-  ref,
-  uploadBytes,
-  uploadBytesResumable,
-} from "firebase/storage";
+import { ProjectImageModel } from "../data/project-image-model";
+import { getDownloadURL, listAll, ref, uploadBytes } from "firebase/storage";
 import { ProjectInterface } from "./interfaces";
+import { ProjectModel, projectModelToFirestore } from "../data/project-model";
 
 export async function getAllWork(): Promise<ProjectModel[]> {
   const workCollection = collection(db, "work");
@@ -59,4 +54,11 @@ export async function uploadImage(
   );
 
   return await getImageUrl(uploadTask.ref.fullPath);
+}
+
+export async function writeProject(projectModel: ProjectModel) {
+  await setDoc(
+    doc(db, `work/${projectModel.id}`),
+    projectModelToFirestore(projectModel)
+  );
 }
