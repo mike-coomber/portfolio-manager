@@ -3,19 +3,38 @@ import { useContext } from "react";
 import { PageIndexContext, ProjectContext } from "../context";
 import { PageModel } from "@/app/data/page-model";
 
-export function PageSelector({}: {}) {
-  const { project } = useContext(ProjectContext);
-  const { setCurrentPageIndex } = useContext(PageIndexContext);
+export function PageSelector() {
+  const { project, setProject } = useContext(ProjectContext);
+  const { currentPageIndex, setCurrentPageIndex } =
+    useContext(PageIndexContext);
 
   const pages = project.pages;
 
   const pageComponents = pages.map((page, index) => (
     <div
       key={index}
-      className="p-2 cursor-pointer"
+      className="p-2 cursor-pointer flex justify-between group"
       onClick={() => setCurrentPageIndex(index)}
     >
       <Typography>Page {index + 1}</Typography>
+      {pages.length > 1 && (
+        <span
+          key={"delete button"}
+          className="material-symbols-rounded hidden group-hover:flex"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (currentPageIndex == index) {
+              setCurrentPageIndex(Math.max(index - 1, 0));
+            }
+            setProject({
+              ...project,
+              pages: project.pages.filter((val) => val != page),
+            });
+          }}
+        >
+          delete
+        </span>
+      )}
     </div>
   ));
 

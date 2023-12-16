@@ -58,7 +58,10 @@ export function ImagePickerDialog({
   ));
 
   imageComponents.push(
-    <UploadTile onImageUploaded={(img) => setImages([...images, img])} />
+    <UploadTile
+      key={"upload-tile"}
+      onImageUploaded={(img) => setImages([...images, img])}
+    />
   );
 
   return (

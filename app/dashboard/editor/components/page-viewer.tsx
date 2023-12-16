@@ -1,15 +1,23 @@
 import { PageModel } from "@/app/data/page-model";
 import { Typography, Button } from "@material-tailwind/react";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { PageIndexContext, ProjectContext } from "../context";
 import { ImagePickerDialog } from "./image-picker-dialog";
 import Image from "next/image";
 
 export function PageViewer() {
-  const [imagePickerOpen, setImagePickerOpen] = useState(false);
-
   const { project, setProject } = useContext(ProjectContext);
   const { currentPageIndex } = useContext(PageIndexContext);
+
+  const [imagePickerOpen, setImagePickerOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(
+    project.pages[currentPageIndex]
+  );
+
+  useEffect(() => {
+    console.log("page viewer", currentPageIndex);
+    setCurrentPage(project.pages[currentPageIndex]);
+  }, [currentPageIndex]);
 
   return (
     <div className="flex-1 bg-red-50 p-12">
@@ -18,7 +26,7 @@ export function PageViewer() {
         Open Image Picker
       </Button>
       <div className="flex">
-        {project.pages[currentPageIndex].images.map((image, index) => (
+        {currentPage.images.map((image, index) => (
           <div key={index}>
             <Image
               key={image.name}
@@ -32,12 +40,17 @@ export function PageViewer() {
             <Button
               variant="text"
               onClick={() => {
-                const page = project.pages[currentPageIndex];
+                const newImages = currentPage.images.filter(
+                  (val) => val != image
+                );
+                const newPage: PageModel = {
+                  ...currentPage,
+                  images: newImages,
+                };
 
-                const newImages = page.images.filter((val) => val != image);
-                const newPage: PageModel = { ...page, images: newImages };
-
-                const newPages = project.pages.filter((val) => val != page);
+                const newPages = project.pages.filter(
+                  (val) => val != currentPage
+                );
 
                 newPages.splice(currentPageIndex, 0, newPage);
                 setProject({ ...project, pages: newPages });
@@ -52,13 +65,11 @@ export function PageViewer() {
         open={imagePickerOpen}
         setOpen={setImagePickerOpen}
         onImageSelected={(newImage) => {
-          const page = project.pages[currentPageIndex];
-
           const newPage: PageModel = {
-            ...page,
-            images: [...page.images, newImage],
+            ...currentPage,
+            images: [...currentPage.images, newImage],
           };
-          const newPages = project.pages.filter((val) => val != page);
+          const newPages = project.pages.filter((val) => val != currentPage);
           newPages.splice(currentPageIndex, 0, newPage);
           setProject({ ...project, pages: newPages });
         }}
