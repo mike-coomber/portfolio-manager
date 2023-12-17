@@ -19,4 +19,11 @@
 body {
   color: rgb(var(--foreground-rgb));
   background: var(--background);
+  display: flex;
+  flex-direction: column;
+}
+
+body,
+html {
+  height: 100%;
 }

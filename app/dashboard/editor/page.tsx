@@ -48,15 +48,13 @@ export default function Page() {
         <PageIndexContext.Provider
           value={{ currentPageIndex, setCurrentPageIndex }}
         >
-          <div className="h-full">
-            <ProjectInfo />
-            <div className="flex h-full">
-              <PageSelector />
-              {currentPageIndex != undefined && <PageViewer />}
-            </div>
+          <ProjectInfo />
+          <div className="flex flex-1">
+            <PageSelector />
+            {currentPageIndex != undefined && <PageViewer />}
           </div>
           <footer
-            className="flex w-full bg-white p-4 justify-end"
+            className="flex w-full bg-white p-4 justify-end z-10"
             onClick={() => {
               allProjects[indexOfProject] = project;
               writeProject(project);

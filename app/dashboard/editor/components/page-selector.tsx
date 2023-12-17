@@ -57,7 +57,7 @@ function NewPage() {
       key={"new-page"}
       className="border-2 border-dashed border-black flex items-center justify-center cursor-pointer px-4 py-2"
       onClick={() => {
-        const newPageIndex = currentPageIndex + 1;
+        const newPageIndex = project.pages.length;
         setProject({
           ...project,
           pages: [

@@ -23,7 +23,7 @@ export default function RootLayout({
           <header className="bg-light-blue-700 p-4 text-lg text-white ">
             Portfolio manager
           </header>
-          {children}
+          <div className="flex flex-col flex-1">{children}</div>
         </body>
       </html>
     </Providers>
