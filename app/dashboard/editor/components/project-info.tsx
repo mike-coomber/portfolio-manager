@@ -3,6 +3,7 @@ import { useState, useContext } from "react";
 import { ProjectContext } from "../context";
 import { ImagePickerDialog } from "./image-picker-dialog";
 import Image from "next/image";
+import { ColorPicker } from "./color-picker";
 
 export function ProjectInfo() {
   const [imagePickerOpen, setImagePickerOpen] = useState(false);
@@ -72,6 +73,14 @@ export function ProjectInfo() {
               setProject({ ...project, description: event.target.value });
             }}
             defaultValue={project.description}
+          />
+        </div>
+        <div className="ml-4 flex">
+          <ColorPicker
+            onColorSelected={(color: string) =>
+              setProject({ ...project, backgroundColor: color })
+            }
+            initialColor={project.backgroundColor}
           />
         </div>
       </div>

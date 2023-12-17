@@ -6,6 +6,7 @@ export interface ProjectInterface {
   description: string;
   services: string;
   image: string;
+  backgroundColor: string;
   pages: PageInterface[];
 }
 

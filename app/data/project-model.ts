@@ -12,6 +12,7 @@ export class ProjectModel {
   description: string;
   services: string;
   image?: ProjectImageModel;
+  backgroundColor?: string;
   pages: PageModel[];
 
   constructor(
@@ -21,7 +22,8 @@ export class ProjectModel {
     description: string,
     services: string,
     pages: PageModel[],
-    image?: ProjectImageModel
+    image?: ProjectImageModel,
+    backgroundColor?: string
   ) {
     this.id = id;
     this.name = name;
@@ -30,6 +32,7 @@ export class ProjectModel {
     this.services = services;
     this.pages = pages;
     this.image = image;
+    this.backgroundColor = backgroundColor;
   }
 
   static empty(): ProjectModel {
@@ -56,7 +59,8 @@ export class ProjectModel {
       projectInterface.description,
       projectInterface.services,
       pageModels,
-      new ProjectImageModel(imageName, projectInterface.image, imageUrl)
+      new ProjectImageModel(imageName, projectInterface.image, imageUrl),
+      projectInterface.backgroundColor
     );
   }
 }
