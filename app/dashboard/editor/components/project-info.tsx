@@ -40,7 +40,7 @@ export function ProjectInfo() {
               label="Name"
               type="text"
               name="name"
-              defaultValue={project.name}
+              value={project.name}
               onChange={(event) => {
                 setProject({ ...project, name: event.target.value });
               }}
@@ -54,7 +54,7 @@ export function ProjectInfo() {
               type="text"
               label="Services"
               name="services"
-              defaultValue={project.services}
+              value={project.services}
               onChange={(event) => {
                 setProject({ ...project, services: event.target.value });
               }}
@@ -72,7 +72,7 @@ export function ProjectInfo() {
             onChange={(event) => {
               setProject({ ...project, description: event.target.value });
             }}
-            defaultValue={project.description}
+            value={project.description}
           />
         </div>
         <div className="ml-4 flex">
