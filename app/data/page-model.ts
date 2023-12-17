@@ -5,29 +5,30 @@ import { ProjectImageModel } from "./project-image-model";
 export class PageModel {
   images: ProjectImageModel[];
   backgroundColor: string | undefined;
-  pageNumber: number;
+  id: string;
 
   constructor(
     images: ProjectImageModel[],
-    pageNumber: number,
+    id: string,
     backgroundColor?: string
   ) {
     this.images = images;
     this.backgroundColor = backgroundColor;
-    this.pageNumber = pageNumber;
+    this.id = id;
   }
 
-  static async fromInterface(
-    pageInterface: PageInterface,
-    pageNumber: number
-  ): Promise<PageModel> {
+  static async fromInterface(pageInterface: PageInterface): Promise<PageModel> {
     const images = await Promise.all(
       pageInterface.images.map((location) => {
         return ProjectImageModel.fromFirebaseLocation(location);
       })
     );
 
-    return new PageModel(images, pageNumber, pageInterface.backgroundColor);
+    return new PageModel(
+      images,
+      pageInterface.id,
+      pageInterface.backgroundColor
+    );
   }
 }
 

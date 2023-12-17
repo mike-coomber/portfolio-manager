@@ -35,10 +35,12 @@ export function PageViewer() {
   function resetColor() {
     const originalProject = allProjects.find((val) => val.id == project.id);
     if (originalProject != undefined) {
-      try {
-        const originalPage = originalProject.pages[currentPageIndex];
+      const originalPage = originalProject.pages.find(
+        (val) => val.id == currentPage.id
+      );
+      if (originalPage) {
         changeColor(originalPage.backgroundColor);
-      } catch (e) {
+      } else {
         changeColor(undefined);
       }
     }

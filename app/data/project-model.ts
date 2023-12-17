@@ -47,9 +47,7 @@ export class ProjectModel {
     const imageUrl = await getImageUrl(projectInterface.image);
 
     const pageModels = await Promise.all(
-      projectInterface.pages.map((page, index) =>
-        PageModel.fromInterface(page, index)
-      )
+      projectInterface.pages.map((page) => PageModel.fromInterface(page))
     );
 
     return new ProjectModel(

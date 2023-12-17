@@ -60,7 +60,10 @@ function NewPage() {
         const newPageIndex = currentPageIndex + 1;
         setProject({
           ...project,
-          pages: [...project.pages, new PageModel([], newPageIndex)],
+          pages: [
+            ...project.pages,
+            new PageModel([], `${project.id}:${newPageIndex}`),
+          ],
         });
         setCurrentPageIndex(newPageIndex);
       }}

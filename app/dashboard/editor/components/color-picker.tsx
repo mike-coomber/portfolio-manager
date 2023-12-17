@@ -16,7 +16,9 @@ export function ColorPicker({
   onDeletePressed?: () => void;
 }) {
   const [open, setOpen] = useState(false);
-  const [currentColor, setCurrentColor] = useState(initialColor ?? "white");
+  const [currentColor, setCurrentColor] = useState(
+    initialColor ?? "var(--background)"
+  );
 
   return (
     <>

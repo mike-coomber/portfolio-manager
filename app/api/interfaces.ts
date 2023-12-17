@@ -11,6 +11,7 @@ export interface ProjectInterface {
 }
 
 export interface PageInterface {
+  id: string;
   images: string[];
   backgroundColor: string;
 }
