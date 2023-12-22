@@ -3,30 +3,37 @@ import { PageInterface } from "../api/interfaces";
 import { ProjectImageModel } from "./project-image-model";
 
 export class PageModel {
-  images: ProjectImageModel[];
+  images: ProjectImageModel[] | undefined;
+  videoUrl: string | undefined;
   backgroundColor: string | undefined;
   id: string;
 
   constructor(
-    images: ProjectImageModel[],
     id: string,
+    images?: ProjectImageModel[] | undefined,
+    videoUrl?: string | undefined,
     backgroundColor?: string
   ) {
     this.images = images;
+    this.videoUrl = videoUrl;
     this.backgroundColor = backgroundColor;
     this.id = id;
   }
 
   static async fromInterface(pageInterface: PageInterface): Promise<PageModel> {
-    const images = await Promise.all(
-      pageInterface.images.map((location) => {
-        return ProjectImageModel.fromFirebaseLocation(location);
-      })
-    );
+    const images =
+      pageInterface.images != undefined
+        ? await Promise.all(
+            pageInterface.images.map((location) => {
+              return ProjectImageModel.fromFirebaseLocation(location);
+            })
+          )
+        : undefined;
 
     return new PageModel(
-      images,
       pageInterface.id,
+      images,
+      pageInterface.videoUrl,
       pageInterface.backgroundColor
     );
   }
@@ -37,6 +44,10 @@ export function pageModelToFirestore(
 ): WithFieldValue<DocumentData> {
   return {
     ...(page.backgroundColor && { backgroundColor: page.backgroundColor }),
-    images: page.images.map((image) => image.firebaseLocaiton),
+    ...(page.videoUrl && { videoUrl: page.videoUrl }),
+    ...(page.images &&
+      page.videoUrl == undefined && {
+        images: page.images.map((image) => image.firebaseLocaiton),
+      }),
   };
 }

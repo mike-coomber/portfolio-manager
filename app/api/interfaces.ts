@@ -12,6 +12,7 @@ export interface ProjectInterface {
 
 export interface PageInterface {
   id: string;
-  images: string[];
+  images: string[] | undefined;
+  videoUrl: string | undefined;
   backgroundColor: string;
 }

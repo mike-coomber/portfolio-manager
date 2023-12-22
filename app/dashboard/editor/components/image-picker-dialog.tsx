@@ -65,30 +65,19 @@ export function ImagePickerDialog({
   );
 
   return (
-    <>
-      <Dialog open={open} handler={setOpen}>
-        <DialogHeader>Its a simple dialog.</DialogHeader>
-        <DialogBody className={`grid grid-cols-4 grid-rows-${numRows} gap-4`}>
-          {...imageComponents}
-        </DialogBody>
-        <DialogFooter>
-          <Button
-            variant="text"
-            onClick={() => setOpen(false)}
-            className="mr-1"
-          >
-            <span>Close</span>
-          </Button>
-          <Button
-            variant="gradient"
-            color="green"
-            onClick={() => setOpen(false)}
-          >
-            <span>Confirm</span>
-          </Button>
-        </DialogFooter>
-      </Dialog>
-    </>
+    <Dialog open={open} handler={setOpen}>
+      <DialogBody className={`grid grid-cols-4 grid-rows-${numRows} gap-4`}>
+        {...imageComponents}
+      </DialogBody>
+      <DialogFooter>
+        <Button variant="text" onClick={() => setOpen(false)} className="mr-1">
+          <span>Close</span>
+        </Button>
+        <Button variant="gradient" color="green" onClick={() => setOpen(false)}>
+          <span>Confirm</span>
+        </Button>
+      </DialogFooter>
+    </Dialog>
   );
 }
 

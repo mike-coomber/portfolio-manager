@@ -66,6 +66,14 @@ export class ProjectModel {
 export function projectModelToFirestore(
   project: ProjectModel
 ): WithFieldValue<DocumentData> {
+  // Remove pages with empty content
+  const pages = project.pages
+    .filter(
+      (page) =>
+        (page.images != undefined && page.images.length > 0) ||
+        page.videoUrl != undefined
+    )
+    .map((page) => pageModelToFirestore(page));
   return {
     id: project.id,
     name: project.name,
@@ -73,6 +81,6 @@ export function projectModelToFirestore(
     description: project.description,
     services: project.services,
     image: project.image?.firebaseLocaiton,
-    pages: project.pages.map((page) => pageModelToFirestore(page)),
+    pages: pages,
   };
 }

@@ -38,7 +38,7 @@ export function PageSelector() {
     </div>
   ));
 
-  pageComponents.push(<NewPage />);
+  pageComponents.push(<NewPageTile />);
 
   return (
     <div className="px-4 py-2 bg-white shadow-md flex-initial w-40">
@@ -47,7 +47,7 @@ export function PageSelector() {
   );
 }
 
-function NewPage() {
+function NewPageTile() {
   const { project, setProject } = useContext(ProjectContext);
   const { currentPageIndex, setCurrentPageIndex } =
     useContext(PageIndexContext);
@@ -62,7 +62,7 @@ function NewPage() {
           ...project,
           pages: [
             ...project.pages,
-            new PageModel([], `${project.id}:${newPageIndex}`),
+            new PageModel(`${project.id}:${newPageIndex}`),
           ],
         });
         setCurrentPageIndex(newPageIndex);
