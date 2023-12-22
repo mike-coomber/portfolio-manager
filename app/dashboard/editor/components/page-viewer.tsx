@@ -1,4 +1,4 @@
-import { PageModel } from "@/app/data/page-model";
+import { ContentType, PageModel } from "@/app/data/page-model";
 import { Typography, Button, Radio } from "@material-tailwind/react";
 import { useState, useContext, useEffect } from "react";
 import { PageIndexContext, ProjectContext } from "../context";
@@ -6,28 +6,36 @@ import { ImagePickerDialog } from "./image-picker-dialog";
 import Image from "next/image";
 import { ColorPicker } from "./color-picker";
 import { ProjectsContext } from "@/app/context/contexts";
-import { ContentTypeDialog } from "./content-type-dialog";
-
-enum ContentType {
-  images,
-  video,
-}
+import { VideoUrlDialog } from "./video-url-dialog";
+import ReactPlayer from "react-player";
 
 export function PageViewer() {
   const allProjects = useContext(ProjectsContext);
+
   const { project, setProject } = useContext(ProjectContext);
   const { currentPageIndex } = useContext(PageIndexContext);
 
   const [imagePickerOpen, setImagePickerOpen] = useState(false);
+  const [videoUrlOpen, setVideoUrlOpen] = useState(false);
+
   const [contentType, setContentType] = useState(ContentType.images);
 
   const currentPage = project.pages[currentPageIndex];
+
+  useEffect(() => {
+    setContentType(currentPage.contentType);
+  }, [currentPageIndex]);
 
   function updatePage(newPage: PageModel) {
     const newPages = project.pages.filter((val) => val != currentPage);
 
     newPages.splice(currentPageIndex, 0, newPage);
     setProject({ ...project, pages: newPages });
+  }
+
+  function changeContentType(contentType: ContentType) {
+    currentPage.contentType = contentType;
+    setContentType(contentType);
   }
 
   function changeColor(newColor: string | undefined) {
@@ -52,6 +60,7 @@ export function PageViewer() {
       }
     }
   }
+  console.log(contentType);
 
   return (
     <div
@@ -65,11 +74,37 @@ export function PageViewer() {
     >
       <div className="flex items-center justify-between">
         <Typography>Page preview</Typography>
+        <Button
+          onClick={() => {
+            switch (contentType) {
+              case ContentType.images:
+                setImagePickerOpen(true);
+                break;
+              case ContentType.video:
+                setVideoUrlOpen(true);
+                break;
+            }
+          }}
+        >
+          Add content
+        </Button>
         <div className="flex">
-          <div>
+          <div className="flex flex-col items-center">
             <Typography>Content type</Typography>
-            <Radio label="Image" crossOrigin={null} />
-            <Radio label="Video link" crossOrigin={null} />
+            <div>
+              <Radio
+                label="Image"
+                crossOrigin={null}
+                checked={contentType == ContentType.images}
+                onChange={() => changeContentType(ContentType.images)}
+              />
+              <Radio
+                label="Video link"
+                crossOrigin={null}
+                checked={contentType == ContentType.video}
+                onChange={() => changeContentType(ContentType.video)}
+              />
+            </div>
           </div>
           <ColorPicker
             initialColor={currentPage.backgroundColor}
@@ -85,7 +120,8 @@ export function PageViewer() {
         </div>
       </div>
       <div className="flex">
-        {currentPage.images &&
+        {contentType == ContentType.images &&
+          currentPage.images &&
           currentPage.images.map((image, index) => (
             <div key={index}>
               <Image
@@ -120,7 +156,23 @@ export function PageViewer() {
               </Button>
             </div>
           ))}
+        {contentType == ContentType.video &&
+          currentPage.videoUrl != undefined && (
+            <ReactPlayer url={currentPage.videoUrl} />
+          )}
       </div>
+      <VideoUrlDialog
+        open={videoUrlOpen}
+        setOpen={setVideoUrlOpen}
+        initialUrl={currentPage.videoUrl}
+        onUrlSelected={(url) => {
+          const newPage: PageModel = {
+            ...currentPage,
+            videoUrl: url,
+          };
+          updatePage(newPage);
+        }}
+      />
       <ImagePickerDialog
         open={imagePickerOpen}
         setOpen={setImagePickerOpen}
@@ -129,9 +181,7 @@ export function PageViewer() {
             ...currentPage,
             images: [...(currentPage.images ?? []), newImage],
           };
-          const newPages = project.pages.filter((val) => val != currentPage);
-          newPages.splice(currentPageIndex, 0, newPage);
-          setProject({ ...project, pages: newPages });
+          updatePage(newPage);
         }}
       />
     </div>
