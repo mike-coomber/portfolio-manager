@@ -11,25 +11,36 @@ import Link from "next/link";
 import { ProjectModel } from "@/app/data/project-model";
 
 export function ProjectCard({ data }: { data: ProjectModel }) {
+  const size = 350;
+
   return (
-    <Link href={`dashboard/editor?id=${data.id}`}>
-      <Card className="m-4 flex">
-        <CardBody className="p-4 flex-col">
-          <Typography variant="h5" color="black">
+    <Link href={`dashboard/edit?id=${data.id}`}>
+      <div className="relative shadow-2xl ">
+        {data.image != undefined && (
+          <Image
+            className="rounded-lg"
+            src={data.image?.url}
+            alt={`Image for ${data.name}`}
+            width={size}
+            height={size}
+            style={{
+              objectFit: "contain",
+              maxHeight: size,
+              maxWidth: size,
+            }}
+          />
+        )}
+        <div className="absolute top-0 bottom-0 left-0 right-0 flex items-center justify-center hover:bg-opacity-30 text-5xl hover:text-6xl bg-black bg-opacity-10 rounded-lg transition-all">
+          <Typography
+            variant="h2"
+            color="white"
+            className="transition-all"
+            style={{ fontSize: "inherit" }}
+          >
             {data.name}
           </Typography>
-          {data.image != undefined && (
-            <Image
-              className="py-2 justify-center flex"
-              src={data.image?.url}
-              alt={`Image for ${data.name}`}
-              width={600}
-              height={400}
-            />
-          )}
-          <Typography>{data.description}</Typography>
-        </CardBody>
-      </Card>
+        </div>
+      </div>
     </Link>
   );
 }

@@ -25,8 +25,6 @@ export function ImagePickerDialog({
 }: ImagePickerDialogProps) {
   const { images, setImages } = useContext(ImagesContext);
 
-  const numRows = Math.ceil(images.length / 4);
-
   const imageComponents = images.map((image, index) => (
     <div
       key={index}
@@ -66,7 +64,7 @@ export function ImagePickerDialog({
 
   return (
     <Dialog open={open} handler={setOpen}>
-      <DialogBody className={`grid grid-cols-4 grid-rows-${numRows} gap-4`}>
+      <DialogBody className={`grid grid-cols-4 gap-4`}>
         {...imageComponents}
       </DialogBody>
       <DialogFooter>

@@ -49,8 +49,7 @@ export function PageSelector() {
 
 function NewPageTile() {
   const { project, setProject } = useContext(ProjectContext);
-  const { currentPageIndex, setCurrentPageIndex } =
-    useContext(PageIndexContext);
+  const { setCurrentPageIndex } = useContext(PageIndexContext);
 
   return (
     <div

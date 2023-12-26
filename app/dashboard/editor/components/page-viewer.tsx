@@ -10,7 +10,7 @@ import { VideoUrlDialog } from "./video-url-dialog";
 import ReactPlayer from "react-player";
 
 export function PageViewer() {
-  const allProjects = useContext(ProjectsContext);
+  const { allProjects } = useContext(ProjectsContext);
 
   const { project, setProject } = useContext(ProjectContext);
   const { currentPageIndex } = useContext(PageIndexContext);
@@ -60,7 +60,6 @@ export function PageViewer() {
       }
     }
   }
-  console.log(contentType);
 
   return (
     <div

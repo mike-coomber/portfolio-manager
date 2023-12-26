@@ -9,7 +9,7 @@ interface ProjectContextModel {
 }
 
 export const ProjectContext = createContext<ProjectContextModel>({
-  project: ProjectModel.empty(),
+  project: ProjectModel.fromId("none"),
   setProject: (val) => {},
 });
 

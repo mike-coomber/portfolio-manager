@@ -35,8 +35,14 @@ export class ProjectModel {
     this.backgroundColor = backgroundColor;
   }
 
-  static empty(): ProjectModel {
-    return new ProjectModel("", "", "", "", "", []);
+  static fromId(id: string): ProjectModel {
+    let name: string = id.replaceAll("-", " ");
+    name = name
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.substring(1))
+      .join(" ");
+
+    return new ProjectModel(id, name, "", "", "", [new PageModel(`${id}:0`)]);
   }
 
   static async fromInterface(

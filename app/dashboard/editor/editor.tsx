@@ -2,44 +2,26 @@
 import { ProjectsContext } from "@/app/context/contexts";
 import { getAllImages, writeProject } from "@/app/api/api";
 import { ProjectImageModel } from "@/app/data/project-image-model";
-import { Button, Input, Textarea, Typography } from "@material-tailwind/react";
+import { Button } from "@material-tailwind/react";
 import { useSearchParams } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
-import Image from "next/image";
-import { ImagePickerDialog } from "./components/image-picker-dialog";
 import { ImagesContext, PageIndexContext, ProjectContext } from "./context";
-import { PageModel } from "@/app/data/page-model";
 import { ProjectModel } from "@/app/data/project-model";
 import { ProjectInfo } from "./components/project-info";
 import { PageSelector } from "./components/page-selector";
 import { PageViewer } from "./components/page-viewer";
 import Link from "next/link";
 
-export default function Page() {
-  const [project, setProject] = useState<ProjectModel>();
+export function Editor({ initialProject }: { initialProject: ProjectModel }) {
+  const [project, setProject] = useState<ProjectModel>(initialProject);
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [allImages, setAllImages] = useState<ProjectImageModel[]>([]);
 
-  const allProjects = useContext(ProjectsContext);
-  const queryParams = useSearchParams();
-
-  let indexOfProject = 0;
+  const { allProjects, setAllProjects } = useContext(ProjectsContext);
 
   useEffect(() => {
-    getProject();
-    const id = queryParams.get("id");
-    getAllImages(id!).then((images) => setAllImages(images));
+    getAllImages(project.id).then((images) => setAllImages(images));
   }, []);
-
-  function getProject() {
-    const id = queryParams.get("id");
-    const match = allProjects.find((work) => work.id == id);
-
-    if (match != undefined) {
-      indexOfProject = allProjects.indexOf(match);
-      setProject({ ...match }); // Copy project by value so the original is not modified
-    }
-  }
 
   if (project == undefined) {
     return <>404</>;
@@ -69,7 +51,7 @@ export default function Page() {
                 variant="text"
                 className="mr-4"
                 onClick={() => {
-                  getProject();
+                  setProject(initialProject);
                   setCurrentPageIndex(0);
                 }}
               >
@@ -77,7 +59,15 @@ export default function Page() {
               </Button>
               <Button
                 onClick={() => {
-                  allProjects[indexOfProject] = project;
+                  const projectIndex = allProjects.indexOf(initialProject);
+                  if (projectIndex > -1) {
+                    const projectsCopy = [...allProjects];
+
+                    projectsCopy.splice(projectIndex, 1, project);
+
+                    setAllProjects(projectsCopy);
+                  }
+
                   writeProject(project);
                 }}
               >

@@ -5,16 +5,16 @@ import { getAllWork } from "../api/api";
 import { ProjectModel } from "../data/project-model";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const [projects, setProjects] = useState<ProjectModel[]>([]);
+  const [allProjects, setAllProjects] = useState<ProjectModel[]>([]);
 
   useEffect(() => {
     getAllWork().then((work) => {
-      setProjects(work);
+      setAllProjects(work);
     });
   }, []);
 
   return (
-    <ProjectsContext.Provider value={projects}>
+    <ProjectsContext.Provider value={{ allProjects, setAllProjects }}>
       {children}
     </ProjectsContext.Provider>
   );

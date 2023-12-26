@@ -1,17 +1,51 @@
 "use client";
 
-import { useContext } from "react";
+import { ReactElement, useContext, useState } from "react";
 import { ProjectCard } from "./components/work-card";
 import { ProjectsContext } from "../context/contexts";
+import { NewProjectDialog } from "./components/new-project-dialog";
 
 export default function Page() {
-  const projects = useContext(ProjectsContext);
+  const [newProjectDialogOpen, setNewProjectDialogOpen] = useState(false);
+
+  const { allProjects } = useContext(ProjectsContext);
+
+  const tiles = allProjects.map((projectModel) => (
+    <ProjectCard key={projectModel.id} data={projectModel} />
+  ));
+
+  tiles.push(<NewProjectTile onClick={() => setNewProjectDialogOpen(true)} />);
 
   return (
-    <div>
-      {projects.map((projectModel) => (
-        <ProjectCard key={projectModel.id} data={projectModel} />
-      ))}
+    <>
+      <div className={`flex`}>
+        {tiles.map((tile) => (
+          <GridItem>{tile}</GridItem>
+        ))}
+      </div>
+      <NewProjectDialog
+        open={newProjectDialogOpen}
+        setOpen={setNewProjectDialogOpen}
+      />
+    </>
+  );
+}
+
+function GridItem({ children }: { children: ReactElement }) {
+  return (
+    <div className="flex flex-1 p-8" style={{ maxWidth: 400, maxHeight: 400 }}>
+      {children}
+    </div>
+  );
+}
+
+function NewProjectTile({ onClick }: { onClick: () => void }) {
+  return (
+    <div
+      className="flex items-center justify-center cursor-pointer w-full h-full border-dashed border-black border-2 rounded-lg"
+      onClick={onClick}
+    >
+      Add Project
     </div>
   );
 }
