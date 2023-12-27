@@ -1,7 +1,7 @@
 "use client";
+import { Editor } from "@/app/editor/editor";
+import { ProjectModel } from "@/data/project-model";
 import { useSearchParams } from "next/navigation";
-import { Editor } from "../editor/editor";
-import { ProjectModel } from "@/app/data/project-model";
 
 export default function Page() {
   const queryParams = useSearchParams();

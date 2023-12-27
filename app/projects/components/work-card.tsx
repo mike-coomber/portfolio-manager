@@ -8,13 +8,13 @@ import {
   Button,
 } from "@material-tailwind/react";
 import Link from "next/link";
-import { ProjectModel } from "@/app/data/project-model";
+import { ProjectModel } from "@/data/project-model";
 
 export function ProjectCard({ data }: { data: ProjectModel }) {
   const size = 350;
 
   return (
-    <Link href={`dashboard/edit?id=${data.id}`}>
+    <Link href={`projects/edit?id=${data.id}`}>
       <div className="relative shadow-2xl ">
         {data.image != undefined && (
           <Image

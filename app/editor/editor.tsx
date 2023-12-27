@@ -1,16 +1,14 @@
-"use client";
-import { ProjectsContext } from "@/app/context/contexts";
-import { getAllImages, writeProject } from "@/app/api/api";
-import { ProjectImageModel } from "@/app/data/project-image-model";
 import { Button } from "@material-tailwind/react";
-import { useSearchParams } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { ImagesContext, PageIndexContext, ProjectContext } from "./context";
-import { ProjectModel } from "@/app/data/project-model";
 import { ProjectInfo } from "./components/project-info";
 import { PageSelector } from "./components/page-selector";
 import { PageViewer } from "./components/page-viewer";
 import Link from "next/link";
+import { getAllImages, writeProject } from "@/api/api";
+import { ProjectsContext } from "@/context/contexts";
+import { ProjectImageModel } from "@/data/project-image-model";
+import { ProjectModel } from "@/data/project-model";
 
 export function Editor({ initialProject }: { initialProject: ProjectModel }) {
   const [project, setProject] = useState<ProjectModel>(initialProject);

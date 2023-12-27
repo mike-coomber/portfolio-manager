@@ -1,7 +1,7 @@
 import { Typography } from "@material-tailwind/react";
 import { useContext } from "react";
 import { PageIndexContext, ProjectContext } from "../context";
-import { PageModel } from "@/app/data/page-model";
+import { PageModel } from "@/data/page-model";
 
 export function PageSelector() {
   const { project, setProject } = useContext(ProjectContext);

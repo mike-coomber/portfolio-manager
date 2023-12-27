@@ -21,7 +21,7 @@ export function NewProjectDialog({ open, setOpen }: NewProjectDialogProps) {
   const [error, setError] = useState(false);
 
   function onSumbit() {
-    router.push(`dashboard/add?id=${formatId()}`);
+    router.push(`projects/add?id=${formatId()}`);
   }
 
   function formatId(): string {

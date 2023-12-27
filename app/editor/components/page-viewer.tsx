@@ -1,13 +1,13 @@
-import { ContentType, PageModel } from "@/app/data/page-model";
 import { Typography, Button, Radio } from "@material-tailwind/react";
 import { useState, useContext, useEffect } from "react";
 import { PageIndexContext, ProjectContext } from "../context";
 import { ImagePickerDialog } from "./image-picker-dialog";
 import Image from "next/image";
 import { ColorPicker } from "./color-picker";
-import { ProjectsContext } from "@/app/context/contexts";
 import { VideoUrlDialog } from "./video-url-dialog";
 import ReactPlayer from "react-player";
+import { ProjectsContext } from "@/context/contexts";
+import { ContentType, PageModel } from "@/data/page-model";
 
 export function PageViewer() {
   const { allProjects } = useContext(ProjectsContext);

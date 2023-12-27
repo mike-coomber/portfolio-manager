@@ -8,9 +8,9 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import Image from "next/image";
-import { ProjectImageModel } from "@/app/data/project-image-model";
-import { uploadImage } from "@/app/api/api";
 import { ImagesContext, ProjectContext } from "../context";
+import { uploadImage } from "@/api/api";
+import { ProjectImageModel } from "@/data/project-image-model";
 
 interface ImagePickerDialogProps {
   open: boolean;

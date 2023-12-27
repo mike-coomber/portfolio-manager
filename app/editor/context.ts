@@ -1,6 +1,5 @@
-import { ProjectImageModel } from "@/app/data/project-image-model";
-import { ProjectModel } from "@/app/data/project-model";
-import { create } from "domain";
+import { ProjectImageModel } from "@/data/project-image-model";
+import { ProjectModel } from "@/data/project-model";
 import { createContext } from "react";
 
 interface ProjectContextModel {

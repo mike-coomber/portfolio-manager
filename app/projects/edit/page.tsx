@@ -1,9 +1,9 @@
 "use client";
-import { ProjectsContext } from "@/app/context/contexts";
-import { ProjectModel } from "@/app/data/project-model";
+import { Editor } from "@/app/editor/editor";
+import { ProjectsContext } from "@/context/contexts";
+import { ProjectModel } from "@/data/project-model";
 import { useSearchParams } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
-import { Editor } from "../editor/editor";
 
 export default function Page() {
   const { allProjects } = useContext(ProjectsContext);
