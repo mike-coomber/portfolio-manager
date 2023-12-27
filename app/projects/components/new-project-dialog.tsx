@@ -1,3 +1,4 @@
+import { ProjectsContext } from "@/context/contexts";
 import {
   Button,
   Dialog,
@@ -8,7 +9,7 @@ import {
 } from "@material-tailwind/react";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 interface NewProjectDialogProps {
   open: boolean;
@@ -18,11 +19,20 @@ interface NewProjectDialogProps {
 export function NewProjectDialog({ open, setOpen }: NewProjectDialogProps) {
   const router = useRouter();
 
+  const { allProjects } = useContext(ProjectsContext);
+
   const [projectId, setProjectId] = useState("");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
 
   function onSumbit() {
-    router.push(`projects/add?id=${formatId()}`);
+    const formattedId = formatId();
+    if (allProjects.filter((project) => project.id == formattedId).length > 0) {
+      setError("ID has already been used");
+    } else if (RegExp("[^a-zA-Z0-9-_]").test(projectId)) {
+      setError("ID Contains invalid characters");
+    } else {
+      router.push(`projects/add?id=${formattedId}`);
+    }
   }
 
   function formatId(): string {
@@ -31,15 +41,19 @@ export function NewProjectDialog({ open, setOpen }: NewProjectDialogProps) {
 
   return (
     <Dialog open={open} handler={setOpen}>
-      <DialogHeader>Create Project</DialogHeader>
+      <DialogHeader className="pb-0">Create Project</DialogHeader>
       <DialogBody className="flex flex-col">
         <Typography>Enter an ID for the new project below.</Typography>
         <div className="my-4">
           <Input
             crossOrigin={null}
             label="Project ID"
+            error={error.length > 0}
             value={projectId}
-            onChange={(e) => setProjectId(e.target.value)}
+            onChange={(e) => {
+              setError("");
+              setProjectId(e.target.value);
+            }}
             onSubmit={onSumbit}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -47,18 +61,30 @@ export function NewProjectDialog({ open, setOpen }: NewProjectDialogProps) {
               }
             }}
           />
+          {error.length > 0 && (
+            <Typography variant="small" color="red" className="mt-1">
+              {error}
+            </Typography>
+          )}
           <Typography
             variant="small"
-            className={clsx("opacity-0", {
+            className={clsx("opacity-0 mt-2", {
               "opacity-100": projectId.length > 0,
             })}
           >
             This ID will become: {formatId()}
           </Typography>
         </div>
-        <Button className="self-end" onClick={onSumbit}>
-          Create
-        </Button>
+        <div className="flex justify-end">
+          <Button
+            variant="text"
+            className="mr-4"
+            onClick={() => setOpen(false)}
+          >
+            Cancel
+          </Button>
+          <Button onClick={onSumbit}>Create</Button>
+        </div>
       </DialogBody>
     </Dialog>
   );
