@@ -15,7 +15,7 @@ export function Editor({ initialProject }: { initialProject: ProjectModel }) {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [allImages, setAllImages] = useState<ProjectImageModel[]>([]);
 
-  const { allProjects, setAllProjects } = useContext(ProjectsContext);
+  const projectsContext = useContext(ProjectsContext);
 
   useEffect(() => {
     getAllImages(project.id).then((images) => setAllImages(images));
@@ -39,7 +39,7 @@ export function Editor({ initialProject }: { initialProject: ProjectModel }) {
             {currentPageIndex != undefined && <PageViewer />}
           </div>
           <footer className="flex w-full bg-white p-4 justify-between z-10">
-            <Link href={"/dashboard"}>
+            <Link href={"/projects"}>
               <Button variant="text" className="mr-4">
                 Back
               </Button>
@@ -57,16 +57,7 @@ export function Editor({ initialProject }: { initialProject: ProjectModel }) {
               </Button>
               <Button
                 onClick={() => {
-                  const projectIndex = allProjects.indexOf(initialProject);
-                  if (projectIndex > -1) {
-                    const projectsCopy = [...allProjects];
-
-                    projectsCopy.splice(projectIndex, 1, project);
-
-                    setAllProjects(projectsCopy);
-                  }
-
-                  writeProject(project);
+                  writeProject(project, projectsContext);
                 }}
               >
                 Save

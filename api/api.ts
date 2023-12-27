@@ -1,9 +1,19 @@
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
-import { db, storage } from "../../firebase";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  setDoc,
+} from "firebase/firestore";
 import { ProjectImageModel } from "../data/project-image-model";
 import { getDownloadURL, listAll, ref, uploadBytes } from "firebase/storage";
 import { ProjectInterface } from "./interfaces";
 import { ProjectModel, projectModelToFirestore } from "../data/project-model";
+import { db, storage } from "@/firebase";
+import { ProjectsContext, ProjectsContextModel } from "@/context/contexts";
+import { useContext } from "react";
+
+const user = "maddy";
 
 export async function getAllWork(): Promise<ProjectModel[]> {
   const workCollection = collection(db, "work");
@@ -39,9 +49,11 @@ export async function getAllImages(
 }
 
 export async function uploadImage(
-  file: File,
-  location: string
-): Promise<string> {
+  projectId: string,
+  file: File
+): Promise<ProjectImageModel> {
+  const location = `${user}/${projectId}/${file.name}`;
+
   const storageRef = ref(storage, location);
   const metaData = {
     contentType: `${file.type}`,
@@ -53,12 +65,43 @@ export async function uploadImage(
     metaData
   );
 
-  return await getImageUrl(uploadTask.ref.fullPath);
+  const url = await getImageUrl(uploadTask.ref.fullPath);
+
+  return new ProjectImageModel(file.name, location, url);
 }
 
-export async function writeProject(projectModel: ProjectModel) {
+export async function writeProject(
+  projectModel: ProjectModel,
+  context: ProjectsContextModel
+) {
+  const { allProjects, setAllProjects } = context;
+  console.log(projectModel);
+
   await setDoc(
     doc(db, `work/${projectModel.id}`),
     projectModelToFirestore(projectModel)
-  );
+  ).then(() => {
+    const projectIndex = allProjects.findIndex(
+      (val) => val.id == projectModel.id
+    );
+    const projectsCopy = [...allProjects];
+
+    if (projectIndex > -1) {
+      projectsCopy.splice(projectIndex, 1, projectModel);
+    } else {
+      projectsCopy.push(projectModel);
+    }
+
+    setAllProjects(projectsCopy);
+  });
+}
+
+export async function deleteProject(
+  projectId: string,
+  context: ProjectsContextModel
+): Promise<void> {
+  const { allProjects, setAllProjects } = context;
+
+  await deleteDoc(doc(db, `work/${projectId}`));
+  setAllProjects(allProjects.filter((value) => value.id != projectId));
 }

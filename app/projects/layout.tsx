@@ -1,8 +1,8 @@
 "use client";
+import { getAllWork } from "@/api/api";
+import { ProjectsContext } from "@/context/contexts";
+import { ProjectModel } from "@/data/project-model";
 import { useEffect, useState } from "react";
-import { ProjectsContext } from "../context/contexts";
-import { getAllWork } from "../api/api";
-import { ProjectModel } from "../data/project-model";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [allProjects, setAllProjects] = useState<ProjectModel[]>([]);

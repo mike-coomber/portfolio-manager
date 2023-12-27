@@ -88,12 +88,9 @@ function UploadTile({
   const { project } = useContext(ProjectContext);
 
   async function uploadFile(file: File) {
-    const fileBuffer = Buffer.from(await file.arrayBuffer());
-
-    const location = `maddy/${project.id}/${file.name}`;
-    const url = await uploadImage(file, location);
-
-    onImageUploaded(new ProjectImageModel(file.name, location, url));
+    const imageModel = await uploadImage(project.id, file);
+    console.log(imageModel);
+    onImageUploaded(imageModel);
   }
 
   return (

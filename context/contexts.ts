@@ -1,7 +1,7 @@
 import { createContext } from "react";
 import { ProjectModel } from "../data/project-model";
 
-interface ProjectsContextModel {
+export interface ProjectsContextModel {
   allProjects: ProjectModel[];
   setAllProjects: (val: ProjectModel[]) => void;
 }

@@ -6,6 +6,7 @@ import {
   Input,
   Typography,
 } from "@material-tailwind/react";
+import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -46,7 +47,12 @@ export function NewProjectDialog({ open, setOpen }: NewProjectDialogProps) {
               }
             }}
           />
-          <Typography variant="small">
+          <Typography
+            variant="small"
+            className={clsx("opacity-0", {
+              "opacity-100": projectId.length > 0,
+            })}
+          >
             This ID will become: {formatId()}
           </Typography>
         </div>

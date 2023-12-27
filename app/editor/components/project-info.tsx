@@ -4,6 +4,7 @@ import { ProjectContext } from "../context";
 import { ImagePickerDialog } from "./image-picker-dialog";
 import Image from "next/image";
 import { ColorPicker } from "./color-picker";
+import { ProjectImageModel } from "@/data/project-image-model";
 
 export function ProjectInfo() {
   const [imagePickerOpen, setImagePickerOpen] = useState(false);
@@ -12,28 +13,10 @@ export function ProjectInfo() {
   return (
     <form>
       <div className="p-6 bg-white flex shadow-md">
-        <div
-          className="mr-4 cursor-pointer relative flex justify-center"
+        <ImagePicker
+          initialImage={project.image}
           onClick={() => setImagePickerOpen(true)}
-        >
-          <div className="opacity-0 hover:opacity-100 flex absolute left-0 right-0 top-0 bottom-0 items-center justify-center bg-blue-gray-500 bg-opacity-80 z-10">
-            <Typography color="white">Change</Typography>
-          </div>
-          {project.image != undefined && (
-            <Image
-              src={project.image.url}
-              height={100}
-              width={100}
-              alt={project.image.name}
-              className="flex"
-              style={{
-                minHeight: 100,
-                minWidth: 100,
-                objectFit: "contain",
-              }}
-            />
-          )}
-        </div>
+        />
         <div className="flex-col flex-1">
           <div className="flex-3">
             <Input
@@ -92,5 +75,47 @@ export function ProjectInfo() {
         }}
       />
     </form>
+  );
+}
+
+function ImagePicker({
+  initialImage,
+  onClick,
+}: {
+  initialImage: ProjectImageModel | undefined;
+  onClick: () => void;
+}) {
+  const size = 100;
+
+  return (
+    <div
+      className="mr-4 cursor-pointer relative flex justify-center items-center "
+      onClick={onClick}
+      style={{ minHeight: size, minWidth: size }}
+    >
+      {initialImage != undefined ? (
+        <>
+          <div className="opacity-0 hover:opacity-100 flex absolute left-0 right-0 top-0 bottom-0 items-center justify-center bg-black bg-opacity-40 z-10">
+            <Typography color="white">Change</Typography>
+          </div>
+          <Image
+            src={initialImage.url}
+            height={size}
+            width={size}
+            alt={initialImage.name}
+            className="flex"
+            style={{
+              height: size,
+              width: size,
+              objectFit: "contain",
+            }}
+          />
+        </>
+      ) : (
+        <span className="material-symbols-rounded" style={{ fontSize: size }}>
+          image
+        </span>
+      )}
+    </div>
   );
 }

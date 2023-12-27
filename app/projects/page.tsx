@@ -2,8 +2,8 @@
 
 import { ReactElement, useContext, useState } from "react";
 import { ProjectCard } from "./components/work-card";
-import { ProjectsContext } from "../context/contexts";
 import { NewProjectDialog } from "./components/new-project-dialog";
+import { ProjectsContext } from "@/context/contexts";
 
 export default function Page() {
   const [newProjectDialogOpen, setNewProjectDialogOpen] = useState(false);
