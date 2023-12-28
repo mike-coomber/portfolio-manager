@@ -48,26 +48,35 @@ export async function getAllImages(
   return images;
 }
 
-export async function uploadImage(
+export async function uploadImages(
   projectId: string,
-  file: File
-): Promise<ProjectImageModel> {
-  const location = `${user}/${projectId}/${file.name}`;
+  files: FileList
+): Promise<ProjectImageModel[]> {
+  const imageModels: ProjectImageModel[] = [];
 
-  const storageRef = ref(storage, location);
-  const metaData = {
-    contentType: `${file.type}`,
-  };
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
 
-  const uploadTask = await uploadBytes(
-    storageRef,
-    await file.arrayBuffer(),
-    metaData
-  );
+    const location = `${user}/${projectId}/${file.name}`;
 
-  const url = await getImageUrl(uploadTask.ref.fullPath);
+    const storageRef = ref(storage, location);
+    const metaData = {
+      contentType: `${file.type}`,
+    };
 
-  return new ProjectImageModel(file.name, location, url);
+    const uploadTask = await uploadBytes(
+      storageRef,
+      await file.arrayBuffer(),
+      metaData
+    );
+
+    const url = await getImageUrl(uploadTask.ref.fullPath);
+
+    imageModels.push(new ProjectImageModel(file.name, location, url));
+    console.log("uploaded", file.name);
+  }
+  console.log("returning", imageModels);
+  return imageModels;
 }
 
 export async function writeProject(

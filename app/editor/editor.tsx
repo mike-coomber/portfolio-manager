@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { ImagesContext, PageIndexContext, ProjectContext } from "./context";
 import { ProjectInfo } from "./components/project-info";
 import { PageSelector } from "./components/page-selector";
-import { PageViewer } from "./components/page-viewer";
+import { PageEditor } from "./components/page-editor";
 import Link from "next/link";
 import { getAllImages, writeProject } from "@/api/api";
 import { ProjectsContext } from "@/context/contexts";
@@ -57,7 +57,7 @@ export function Editor({ initialProject }: { initialProject: ProjectModel }) {
           <ProjectInfo />
           <div className="flex flex-1">
             <PageSelector />
-            {currentPageIndex != undefined && <PageViewer />}
+            {currentPageIndex != undefined && <PageEditor />}
           </div>
           <footer className="flex w-full bg-white p-4 justify-between z-10">
             <Link href={"/projects"}>

@@ -9,7 +9,7 @@ import ReactPlayer from "react-player";
 import { ProjectsContext } from "@/context/contexts";
 import { ContentType, PageModel } from "@/data/page-model";
 
-export function PageViewer() {
+export function PageEditor() {
   const { allProjects } = useContext(ProjectsContext);
 
   const { project, setProject } = useContext(ProjectContext);
@@ -58,12 +58,14 @@ export function PageViewer() {
       } else {
         changeColor(undefined);
       }
+    } else {
+      changeColor(undefined);
     }
   }
 
   return (
     <div
-      className="flex-1 p-12"
+      className="flex-1 p-4"
       style={{
         backgroundColor:
           currentPage.backgroundColor ??
@@ -71,9 +73,16 @@ export function PageViewer() {
           "var(--background)",
       }}
     >
-      <div className="flex items-center justify-between">
-        <Typography>Page preview</Typography>
+      <div className="flex items-center justify-center bg-white px-4 py-2 rounded-2xl shadow-lg">
+        <ContentTypePicker
+          contentType={contentType}
+          onTypeChanged={changeContentType}
+        />
+        <Divider />
         <Button
+          size="sm"
+          variant="outlined"
+          className="flex items-center text-center"
           onClick={() => {
             switch (contentType) {
               case ContentType.images:
@@ -85,40 +94,22 @@ export function PageViewer() {
             }
           }}
         >
-          Add content
+          <span className="material-symbols-rounded">add</span>Add content
         </Button>
-        <div className="flex">
-          <div className="flex flex-col items-center">
-            <Typography>Content type</Typography>
-            <div>
-              <Radio
-                label="Image"
-                crossOrigin={null}
-                checked={contentType == ContentType.images}
-                onChange={() => changeContentType(ContentType.images)}
-              />
-              <Radio
-                label="Video link"
-                crossOrigin={null}
-                checked={contentType == ContentType.video}
-                onChange={() => changeContentType(ContentType.video)}
-              />
-            </div>
-          </div>
-          <ColorPicker
-            initialColor={currentPage.backgroundColor}
-            showInline={true}
-            onDeletePressed={() => changeColor(undefined)}
-            onResetPressed={() => {
-              resetColor();
-            }}
-            onColorSelected={(newColor) => {
-              changeColor(newColor);
-            }}
-          />
-        </div>
+        <Divider />
+        <ColorPicker
+          initialColor={currentPage.backgroundColor}
+          showInline={true}
+          onDeletePressed={() => changeColor(undefined)}
+          onResetPressed={() => {
+            resetColor();
+          }}
+          onColorSelected={(newColor) => {
+            changeColor(newColor);
+          }}
+        />
       </div>
-      <div className="flex">
+      <div className="flex p-12">
         {contentType == ContentType.images &&
           currentPage.images &&
           currentPage.images.map((image, index) => (
@@ -183,6 +174,38 @@ export function PageViewer() {
           updatePage(newPage);
         }}
       />
+    </div>
+  );
+}
+
+function Divider() {
+  return <div className="w-px bg-gray-400 mx-4 h-16" />;
+}
+
+function ContentTypePicker({
+  contentType,
+  onTypeChanged,
+}: {
+  contentType: ContentType;
+  onTypeChanged: (val: ContentType) => void;
+}) {
+  return (
+    <div className="flex flex-col items-center">
+      <Typography>Content type</Typography>
+      <div>
+        <Radio
+          label="Image"
+          crossOrigin={null}
+          checked={contentType == ContentType.images}
+          onChange={() => onTypeChanged(ContentType.images)}
+        />
+        <Radio
+          label="Video link"
+          crossOrigin={null}
+          checked={contentType == ContentType.video}
+          onChange={() => onTypeChanged(ContentType.video)}
+        />
+      </div>
     </div>
   );
 }

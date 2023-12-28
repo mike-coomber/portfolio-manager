@@ -1,4 +1,4 @@
-import React, { createRef, useContext, useRef } from "react";
+import React, { createRef, useContext, useRef, useState } from "react";
 import {
   Button,
   Dialog,
@@ -6,11 +6,13 @@ import {
   DialogBody,
   DialogFooter,
   Typography,
+  Spinner,
 } from "@material-tailwind/react";
 import Image from "next/image";
 import { ImagesContext, ProjectContext } from "../context";
-import { uploadImage } from "@/api/api";
+import { uploadImages } from "@/api/api";
 import { ProjectImageModel } from "@/data/project-image-model";
+import clsx from "clsx";
 
 interface ImagePickerDialogProps {
   open: boolean;
@@ -25,16 +27,56 @@ export function ImagePickerDialog({
 }: ImagePickerDialogProps) {
   const { images, setImages } = useContext(ImagesContext);
 
-  const imageComponents = images.map((image, index) => (
-    <div
-      key={index}
-      className="flex flex-col jusify-center items-center text-center cursor-pointer hover:bg-sky-700"
+  const imageComponents = images.map((image) => (
+    <ImageTile
+      image={image}
       onClick={() => {
         if (onImageSelected != undefined) {
           onImageSelected(image);
         }
         setOpen(false);
       }}
+    />
+  ));
+
+  imageComponents.push(
+    <UploadTile
+      key={"upload-tile"}
+      onImagesUploaded={(newImages) => setImages([...images, ...newImages])}
+    />
+  );
+
+  return (
+    <Dialog open={open} handler={setOpen}>
+      <div className="flex justify-end">
+        <Button
+          variant="text"
+          size="sm"
+          className="rounded-full"
+          onClick={() => setOpen(false)}
+        >
+          <span className="material-symbols-rounded cursor-pointer">close</span>
+        </Button>
+      </div>
+      <DialogBody className={`grid grid-cols-4 gap-4`}>
+        {...imageComponents}
+      </DialogBody>
+    </Dialog>
+  );
+}
+
+function ImageTile({
+  image,
+  onClick,
+}: {
+  image: ProjectImageModel;
+  onClick: () => void;
+}) {
+  return (
+    <div
+      key={image.firebaseLocaiton}
+      className="flex relative flex-col jusify-center items-center text-center cursor-pointer hover:bg-gray-300 hover:shadow-sm rounded-md pt-4"
+      onClick={onClick}
     >
       <Image
         src={image.url}
@@ -49,65 +91,60 @@ export function ImagePickerDialog({
           objectFit: "contain",
         }}
       />
-      <Typography className="ml-4 flex" style={{ flex: 1 }}>
+      <Typography className="flex" style={{ flex: 1 }}>
         {image.name}
       </Typography>
     </div>
-  ));
-
-  imageComponents.push(
-    <UploadTile
-      key={"upload-tile"}
-      onImageUploaded={(img) => setImages([...images, img])}
-    />
-  );
-
-  return (
-    <Dialog open={open} handler={setOpen}>
-      <DialogBody className={`grid grid-cols-4 gap-4`}>
-        {...imageComponents}
-      </DialogBody>
-      <DialogFooter>
-        <Button variant="text" onClick={() => setOpen(false)} className="mr-1">
-          <span>Close</span>
-        </Button>
-        <Button variant="gradient" color="green" onClick={() => setOpen(false)}>
-          <span>Confirm</span>
-        </Button>
-      </DialogFooter>
-    </Dialog>
   );
 }
 
 function UploadTile({
-  onImageUploaded,
+  onImagesUploaded,
 }: {
-  onImageUploaded: (img: ProjectImageModel) => void;
+  onImagesUploaded: (images: ProjectImageModel[]) => void;
 }) {
+  const [loading, setLoading] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { project } = useContext(ProjectContext);
 
-  async function uploadFile(file: File) {
-    const imageModel = await uploadImage(project.id, file);
-    console.log(imageModel);
-    onImageUploaded(imageModel);
+  async function uploadFiles(files: FileList) {
+    setLoading(true);
+    const imageModels = await uploadImages(project.id, files);
+    onImagesUploaded(imageModels);
+    setLoading(false);
   }
 
   return (
     <div
       key={"upload-tile"}
-      className="border-2 border-dashed border-black flex items-center justify-center cursor-pointer"
-      onClick={() => fileInputRef?.current?.click()}
+      className={clsx(
+        `border-2 border-dashed border-black flex items-center justify-center cursor-pointer rounded-md`,
+        {
+          "cursor-default": loading,
+        }
+      )}
+      onClick={() => {
+        if (!loading) {
+          fileInputRef?.current?.click();
+        }
+      }}
+      style={{
+        minHeight: 100,
+        minWidth: 100,
+      }}
     >
-      <Typography>Upload Image</Typography>
+      {!loading ? <Typography>Upload Images</Typography> : <Spinner />}
+
       <input
         ref={fileInputRef}
         type="file"
         accept=".png, .jpg, .gif"
-        className="w-full h-full absolute cursor-pointer hidden"
+        multiple={true}
+        className="hidden"
         onChange={(e) => {
           if (e.target.files != null) {
-            uploadFile(e.target.files[0]);
+            uploadFiles(e.target.files);
           }
         }}
       />
