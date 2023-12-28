@@ -91,7 +91,7 @@ function ImageTile({
           objectFit: "contain",
         }}
       />
-      <Typography className="flex" style={{ flex: 1 }}>
+      <Typography className="flex px-2" style={{ flex: 1 }}>
         {image.name}
       </Typography>
     </div>

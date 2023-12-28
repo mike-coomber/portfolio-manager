@@ -2,6 +2,7 @@ import { Typography } from "@material-tailwind/react";
 import { useContext } from "react";
 import { PageIndexContext, ProjectContext } from "../context";
 import { PageModel } from "@/data/page-model";
+import clsx from "clsx";
 
 export function PageSelector() {
   const { project, setProject } = useContext(ProjectContext);
@@ -13,7 +14,12 @@ export function PageSelector() {
   const pageComponents = pages.map((page, index) => (
     <div
       key={index}
-      className="p-2 cursor-pointer flex justify-between group"
+      className={clsx(
+        `py-2 px-4 cursor-pointer flex justify-between group hover:bg-gray-400 rounded-md`,
+        {
+          "bg-gray-300": index == currentPageIndex,
+        }
+      )}
       onClick={() => setCurrentPageIndex(index)}
     >
       <Typography>Page {index + 1}</Typography>
@@ -38,11 +44,14 @@ export function PageSelector() {
     </div>
   ));
 
-  pageComponents.push(<NewPageTile />);
-
   return (
-    <div className="px-4 py-2 bg-white shadow-md flex-initial w-40">
-      {pageComponents}
+    <div className="px-4 py-2 bg-white shadow-md flex-initial min-w-max w-40 max-h-full">
+      <div className="grid grid-cols-1 divide-y divide-slate-50 gap-2">
+        {pageComponents}
+        <div>
+          <NewPageTile />
+        </div>
+      </div>
     </div>
   );
 }
@@ -54,7 +63,7 @@ function NewPageTile() {
   return (
     <div
       key={"new-page"}
-      className="border-2 border-dashed border-black flex items-center justify-center cursor-pointer px-4 py-2"
+      className="border-2 border-dashed border-black flex items-center justify-center cursor-pointer px-4 py-2 rounded-md mt-2"
       onClick={() => {
         const newPageIndex = project.pages.length;
         setProject({

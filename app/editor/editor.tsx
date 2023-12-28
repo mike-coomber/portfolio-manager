@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 export function Editor({ initialProject }: { initialProject: ProjectModel }) {
   const [project, setProject] = useState<ProjectModel>(initialProject);
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [allImages, setAllImages] = useState<ProjectImageModel[]>([]);
 
   const projectsContext = useContext(ProjectsContext);
@@ -25,20 +26,26 @@ export function Editor({ initialProject }: { initialProject: ProjectModel }) {
   function saveProject() {
     const containsContent = project.pages
       .map(
-        (page) => (page.images?.length ?? 0 > 0) || page.videoUrl != undefined
+        (page) => (page.images?.length ?? 0) > 0 || page.videoUrl != undefined
       )
       .includes(true);
 
+    console.log(
+      project.pages.map(
+        (page) => (page.images?.length ?? 0) > 0 || page.videoUrl != undefined
+      )
+    );
+
     if (project.image == undefined) {
-      console.log("here");
       toast.error("You must choose an image for the project");
     } else if (!containsContent) {
-      console.log("here 2");
       toast.error("At least one page must have content on it.");
     } else {
-      writeProject(project, projectsContext).then(() =>
-        toast.success("Project saved successfully")
-      );
+      setLoading(true);
+      writeProject(project, projectsContext).then(() => {
+        setLoading(false);
+        toast.success("Project saved successfully");
+      });
     }
   }
 
@@ -65,7 +72,7 @@ export function Editor({ initialProject }: { initialProject: ProjectModel }) {
                 Back
               </Button>
             </Link>
-            <div>
+            <div className="flex">
               <Button
                 variant="text"
                 className="mr-4"
@@ -76,7 +83,9 @@ export function Editor({ initialProject }: { initialProject: ProjectModel }) {
               >
                 Reset
               </Button>
-              <Button onClick={saveProject}>Save</Button>
+              <Button onClick={saveProject} loading={loading}>
+                Save
+              </Button>
             </div>
           </footer>
         </PageIndexContext.Provider>

@@ -19,8 +19,8 @@ export default function Page() {
   return (
     <>
       <div className={`flex`}>
-        {tiles.map((tile) => (
-          <GridItem>{tile}</GridItem>
+        {tiles.map((tile, index) => (
+          <GridItem key={index}>{tile}</GridItem>
         ))}
       </div>
       <NewProjectDialog

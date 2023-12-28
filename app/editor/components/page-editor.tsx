@@ -2,12 +2,12 @@ import { Typography, Button, Radio } from "@material-tailwind/react";
 import { useState, useContext, useEffect } from "react";
 import { PageIndexContext, ProjectContext } from "../context";
 import { ImagePickerDialog } from "./image-picker-dialog";
-import Image from "next/image";
 import { ColorPicker } from "./color-picker";
 import { VideoUrlDialog } from "./video-url-dialog";
 import ReactPlayer from "react-player";
 import { ProjectsContext } from "@/context/contexts";
 import { ContentType, PageModel } from "@/data/page-model";
+import { PageViewer } from "./page-viewer";
 
 export function PageEditor() {
   const { allProjects } = useContext(ProjectsContext);
@@ -21,6 +21,7 @@ export function PageEditor() {
   const [contentType, setContentType] = useState(ContentType.images);
 
   const currentPage = project.pages[currentPageIndex];
+  console.log(currentPage);
 
   useEffect(() => {
     setContentType(currentPage.contentType);
@@ -94,7 +95,10 @@ export function PageEditor() {
             }
           }}
         >
-          <span className="material-symbols-rounded">add</span>Add content
+          <span className="material-symbols-rounded">add</span>
+          <Typography variant="small" className="mt-0.5">
+            Add content
+          </Typography>
         </Button>
         <Divider />
         <ColorPicker
@@ -109,48 +113,22 @@ export function PageEditor() {
           }}
         />
       </div>
-      <div className="flex p-12">
-        {contentType == ContentType.images &&
-          currentPage.images &&
-          currentPage.images.map((image, index) => (
-            <div key={index}>
-              <Image
-                key={image.name}
-                src={image.url}
-                alt={image.name}
-                width={400}
-                height={400}
-                className="flex-1 p-2"
-                style={{ maxHeight: 400, objectFit: "contain" }}
-              />
-              <Button
-                variant="text"
-                onClick={() => {
-                  const newImages = currentPage.images?.filter(
-                    (val) => val != image
-                  );
-                  const newPage: PageModel = {
-                    ...currentPage,
-                    images: newImages,
-                  };
+      <PageViewer
+        currentPage={currentPage}
+        contentType={contentType}
+        onImageDeleted={(image) => {
+          const newImages = currentPage.images?.filter((val) => val != image);
+          const newPage: PageModel = {
+            ...currentPage,
+            images: newImages,
+          };
 
-                  const newPages = project.pages.filter(
-                    (val) => val != currentPage
-                  );
+          const newPages = project.pages.filter((val) => val != currentPage);
 
-                  newPages.splice(currentPageIndex, 0, newPage);
-                  setProject({ ...project, pages: newPages });
-                }}
-              >
-                Remove
-              </Button>
-            </div>
-          ))}
-        {contentType == ContentType.video &&
-          currentPage.videoUrl != undefined && (
-            <ReactPlayer url={currentPage.videoUrl} />
-          )}
-      </div>
+          newPages.splice(currentPageIndex, 0, newPage);
+          setProject({ ...project, pages: newPages });
+        }}
+      />
       <VideoUrlDialog
         open={videoUrlOpen}
         setOpen={setVideoUrlOpen}
