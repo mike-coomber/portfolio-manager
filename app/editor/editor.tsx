@@ -9,6 +9,7 @@ import { getAllImages, writeProject } from "@/api/api";
 import { ProjectsContext } from "@/context/contexts";
 import { ProjectImageModel } from "@/data/project-image-model";
 import { ProjectModel } from "@/data/project-model";
+import toast from "react-hot-toast";
 
 export function Editor({ initialProject }: { initialProject: ProjectModel }) {
   const [project, setProject] = useState<ProjectModel>(initialProject);
@@ -20,6 +21,26 @@ export function Editor({ initialProject }: { initialProject: ProjectModel }) {
   useEffect(() => {
     getAllImages(project.id).then((images) => setAllImages(images));
   }, []);
+
+  function saveProject() {
+    const containsContent = project.pages
+      .map(
+        (page) => (page.images?.length ?? 0 > 0) || page.videoUrl != undefined
+      )
+      .includes(true);
+
+    if (project.image == undefined) {
+      console.log("here");
+      toast.error("You must choose an image for the project");
+    } else if (!containsContent) {
+      console.log("here 2");
+      toast.error("At least one page must have content on it.");
+    } else {
+      writeProject(project, projectsContext).then(() =>
+        toast.success("Project saved successfully")
+      );
+    }
+  }
 
   if (project == undefined) {
     return <>404</>;
@@ -55,13 +76,7 @@ export function Editor({ initialProject }: { initialProject: ProjectModel }) {
               >
                 Reset
               </Button>
-              <Button
-                onClick={() => {
-                  writeProject(project, projectsContext);
-                }}
-              >
-                Save
-              </Button>
+              <Button onClick={saveProject}>Save</Button>
             </div>
           </footer>
         </PageIndexContext.Provider>

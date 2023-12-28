@@ -28,7 +28,7 @@ export function NewProjectDialog({ open, setOpen }: NewProjectDialogProps) {
     const formattedId = formatId();
     if (allProjects.filter((project) => project.id == formattedId).length > 0) {
       setError("ID has already been used");
-    } else if (RegExp("[^a-zA-Z0-9-_]").test(projectId)) {
+    } else if (RegExp(`[^a-zA-Z0-9-_]/\s/`).test(projectId)) {
       setError("ID Contains invalid characters");
     } else {
       router.push(`projects/add?id=${formattedId}`);
@@ -36,7 +36,7 @@ export function NewProjectDialog({ open, setOpen }: NewProjectDialogProps) {
   }
 
   function formatId(): string {
-    return projectId.toLowerCase().replaceAll(" ", "-");
+    return projectId.toLowerCase().trimEnd().replaceAll(" ", "-");
   }
 
   return (
