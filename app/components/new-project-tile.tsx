@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { NewProjectDialog } from "./new-project-dialog";
-import { getAllProjects } from "@/api/api";
-import { ProjectInterface } from "@/api/interfaces";
+import { getAllProjects } from "@/lib/api/data";
+import { ProjectInterface } from "@/lib/api/interfaces";
 
 export function NewProjectTile() {
   const [newProjectDialogOpen, setNewProjectDialogOpen] = useState(false);

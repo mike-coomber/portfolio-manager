@@ -9,7 +9,7 @@ import { ProjectInfo } from "./components/project-info";
 import { PageSelector } from "./components/page-selector";
 import { PageEditor } from "./components/page-editor";
 import Link from "next/link";
-import { getAllImages, writeProject } from "@/api/api";
+import { getAllImages, writeProject } from "@/lib/api/data";
 import { ProjectImageModel } from "@/app/editor/models/project-image-model";
 import { EditableProject } from "@/app/editor/models/editable-project";
 import toast from "react-hot-toast";

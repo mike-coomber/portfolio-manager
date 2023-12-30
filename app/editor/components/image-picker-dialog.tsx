@@ -10,7 +10,7 @@ import {
 } from "@material-tailwind/react";
 import Image from "next/image";
 import { ImagesContext, EditableProjectContext } from "../context";
-import { uploadImages } from "@/api/api";
+import { uploadImages } from "@/lib/api/data";
 import { ProjectImageModel } from "@/app/editor/models/project-image-model";
 import clsx from "clsx";
 

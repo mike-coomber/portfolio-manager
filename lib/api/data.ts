@@ -6,7 +6,7 @@ import {
   getDocs,
   setDoc,
 } from "firebase/firestore";
-import { ProjectImageModel } from "../app/editor/models/project-image-model";
+import { ProjectImageModel } from "../../app/editor/models/project-image-model";
 import {
   deleteObject,
   getDownloadURL,
@@ -18,7 +18,7 @@ import { ImageInterface, ProjectInterface } from "./interfaces";
 import {
   EditableProject,
   projectModelToFirestore,
-} from "../app/editor/models/editable-project";
+} from "../../app/editor/models/editable-project";
 import { db, storage } from "@/firebase";
 
 const user = "maddy";

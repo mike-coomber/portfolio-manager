@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
-import { ProjectCard } from "./components/project-card";
-import { NewProjectTile } from "./components/new-project-tile";
-import { getAllProjects } from "@/api/api";
+import { ProjectCard } from "../components/project-card";
+import { NewProjectTile } from "../components/new-project-tile";
+import { getAllProjects } from "@/lib/api/data";
 import { projectImageModelToFirestore } from "@/app/editor/models/project-image-model";
 
 export default async function Page() {
@@ -20,7 +20,7 @@ export default async function Page() {
 
   return (
     <div
-      className={`grid auto-rows-fr sm:grid-cols-1 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4`}
+      className={`grid auto-rows-fr sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4`}
     >
       {tiles.map((tile, index) => (
         <GridItem key={index}>{tile}</GridItem>

@@ -3,10 +3,10 @@ import Image from "next/image";
 import { Typography } from "@material-tailwind/react";
 import Link from "next/link";
 import { useState } from "react";
-import { ConfirmationDialog } from "./confirmation-dialog";
-import { deleteProject } from "@/api/api";
+import { deleteProject } from "@/lib/api/data";
 import toast from "react-hot-toast";
-import { ImageInterface } from "@/api/interfaces";
+import { ImageInterface } from "@/lib/api/interfaces";
+import { ConfirmationDialog } from "./confirmation-dialog";
 
 export function ProjectCard({
   projectName,

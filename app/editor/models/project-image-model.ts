@@ -1,4 +1,4 @@
-import { ImageInterface } from "@/api/interfaces";
+import { ImageInterface } from "@/lib/api/interfaces";
 
 export class ProjectImageModel {
   name: string;

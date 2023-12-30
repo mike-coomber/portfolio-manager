@@ -1,5 +1,5 @@
 import { DocumentData, WithFieldValue } from "firebase/firestore";
-import { ProjectInterface } from "../../../api/interfaces";
+import { ProjectInterface } from "../../../lib/api/interfaces";
 import { EditablePage, pageModelToFirestore } from "./editable-page";
 import {
   ProjectImageModel,

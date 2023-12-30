@@ -1,5 +1,5 @@
 "use client";
-import { getProjectById } from "@/api/api";
+import { getProjectById } from "@/lib/api/data";
 import { Editor } from "@/app/editor/editor";
 import { EditableProject } from "@/app/editor/models/editable-project";
 import { useSearchParams } from "next/navigation";

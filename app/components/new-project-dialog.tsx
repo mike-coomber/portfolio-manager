@@ -1,4 +1,4 @@
-import { ProjectInterface } from "@/api/interfaces";
+import { ProjectInterface } from "@/lib/api/interfaces";
 import {
   Button,
   Dialog,
