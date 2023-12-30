@@ -4,7 +4,6 @@ import { PageIndexContext, ProjectContext } from "../context";
 import { ImagePickerDialog } from "./image-picker-dialog";
 import { ColorPicker } from "./color-picker";
 import { VideoUrlDialog } from "./video-url-dialog";
-import ReactPlayer from "react-player";
 import { ProjectsContext } from "@/context/contexts";
 import { ContentType, PageModel } from "@/data/page-model";
 import { PageViewer } from "./page-viewer";
@@ -21,7 +20,6 @@ export function PageEditor() {
   const [contentType, setContentType] = useState(ContentType.images);
 
   const currentPage = project.pages[currentPageIndex];
-  console.log(currentPage);
 
   useEffect(() => {
     setContentType(currentPage.contentType);

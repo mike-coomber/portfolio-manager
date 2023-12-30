@@ -42,21 +42,19 @@ export function ImagePickerDialog({
   imageComponents.push(
     <UploadTile
       key={"upload-tile"}
-      onImagesUploaded={(newImages) => setImages([...images, ...newImages])}
+      onImageUploaded={(newImage) => setImages([...images, newImage])}
     />
   );
 
   return (
     <Dialog open={open} handler={setOpen}>
       <div className="flex justify-end">
-        <Button
-          variant="text"
-          size="sm"
-          className="rounded-full"
+        <span
+          className="material-symbols-rounded cursor-pointer m-4"
           onClick={() => setOpen(false)}
         >
-          <span className="material-symbols-rounded cursor-pointer">close</span>
-        </Button>
+          close
+        </span>
       </div>
       <DialogBody className={`grid grid-cols-4 gap-4`}>
         {...imageComponents}
@@ -74,7 +72,7 @@ function ImageTile({
 }) {
   return (
     <div
-      key={image.firebaseLocaiton}
+      key={image.name}
       className="flex relative flex-col jusify-center items-center text-center cursor-pointer hover:bg-gray-300 hover:shadow-sm rounded-md pt-4"
       onClick={onClick}
     >
@@ -99,9 +97,9 @@ function ImageTile({
 }
 
 function UploadTile({
-  onImagesUploaded,
+  onImageUploaded,
 }: {
-  onImagesUploaded: (images: ProjectImageModel[]) => void;
+  onImageUploaded: (images: ProjectImageModel) => void;
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -110,8 +108,7 @@ function UploadTile({
 
   async function uploadFiles(files: FileList) {
     setLoading(true);
-    const imageModels = await uploadImages(project.id, files);
-    onImagesUploaded(imageModels);
+    const imageModels = await uploadImages(project.id, files, onImageUploaded);
     setLoading(false);
   }
 

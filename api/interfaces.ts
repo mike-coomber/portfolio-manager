@@ -5,14 +5,19 @@ export interface ProjectInterface {
   client: string;
   description: string;
   services: string;
-  image: string;
+  image: ImageInterface;
   backgroundColor: string;
   pages: PageInterface[];
 }
 
 export interface PageInterface {
   id: string;
-  images: string[] | undefined;
+  images: ImageInterface[] | undefined;
   videoUrl: string | undefined;
   backgroundColor: string;
+}
+
+export interface ImageInterface {
+  name: string;
+  url: string;
 }

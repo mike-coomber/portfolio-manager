@@ -1,23 +1,22 @@
-import { getImageUrl } from "../api/api";
-import { getFileNameFromLocation } from "../utils/get-location-name";
+import { ImageInterface } from "@/api/interfaces";
 
 export class ProjectImageModel {
   name: string;
-  firebaseLocaiton: string;
   url: string;
 
-  constructor(name: string, firebaseLocaiton: string, url: string) {
+  constructor(name: string, url: string) {
     this.name = name;
-    this.firebaseLocaiton = firebaseLocaiton;
     this.url = url;
   }
 
-  static async fromFirebaseLocation(
-    location: string
-  ): Promise<ProjectImageModel> {
-    const url = await getImageUrl(location);
-    const name = getFileNameFromLocation(location);
-
-    return new ProjectImageModel(name, location, url);
+  static fromInterface(imageInterface: ImageInterface): ProjectImageModel {
+    return new ProjectImageModel(imageInterface.name, imageInterface.url);
   }
+}
+
+export function projectImageModelToFirestore(model: ProjectImageModel) {
+  return {
+    name: model.name,
+    url: model.url,
+  };
 }

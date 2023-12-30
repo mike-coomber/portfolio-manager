@@ -1,9 +1,10 @@
 import { DocumentData, WithFieldValue } from "firebase/firestore";
-import { getImageUrl } from "../api/api";
 import { ProjectInterface } from "../api/interfaces";
-import { getFileNameFromLocation } from "../utils/get-location-name";
 import { PageModel, pageModelToFirestore } from "./page-model";
-import { ProjectImageModel } from "./project-image-model";
+import {
+  ProjectImageModel,
+  projectImageModelToFirestore,
+} from "./project-image-model";
 
 export class ProjectModel {
   id: string;
@@ -45,25 +46,18 @@ export class ProjectModel {
     return new ProjectModel(id, name, "", "", "", [new PageModel(`${id}:0`)]);
   }
 
-  static async fromInterface(
+  static fromInterface(
     id: string,
     projectInterface: ProjectInterface
-  ): Promise<ProjectModel> {
-    const imageName = getFileNameFromLocation(projectInterface.image);
-    const imageUrl = await getImageUrl(projectInterface.image);
-
-    const pageModels = await Promise.all(
-      projectInterface.pages.map((page) => PageModel.fromInterface(page))
-    );
-
+  ): ProjectModel {
     return new ProjectModel(
       id,
       projectInterface.name,
       projectInterface.client,
       projectInterface.description,
       projectInterface.services,
-      pageModels,
-      new ProjectImageModel(imageName, projectInterface.image, imageUrl),
+      projectInterface.pages.map((page) => PageModel.fromInterface(page)),
+      ProjectImageModel.fromInterface(projectInterface.image),
       projectInterface.backgroundColor
     );
   }
@@ -80,13 +74,14 @@ export function projectModelToFirestore(
         page.videoUrl != undefined
     )
     .map((page) => pageModelToFirestore(page));
+
   return {
     id: project.id,
     name: project.name,
     client: project.client,
     description: project.description,
     services: project.services,
-    image: project.image?.firebaseLocaiton,
+    image: projectImageModelToFirestore(project.image!),
     pages: pages,
   };
 }
