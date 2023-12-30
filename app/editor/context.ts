@@ -1,14 +1,14 @@
-import { ProjectImageModel } from "@/data/project-image-model";
-import { ProjectModel } from "@/data/project-model";
+import { ProjectImageModel } from "@/app/editor/models/project-image-model";
+import { EditableProject } from "@/app/editor/models/editable-project";
 import { createContext } from "react";
 
 interface ProjectContextModel {
-  project: ProjectModel;
-  setProject: (val: ProjectModel) => void;
+  project: EditableProject;
+  setProject: (val: EditableProject) => void;
 }
 
-export const ProjectContext = createContext<ProjectContextModel>({
-  project: ProjectModel.fromId("none"),
+export const EditableProjectContext = createContext<ProjectContextModel>({
+  project: EditableProject.fromId("none"),
   setProject: (val) => {},
 });
 

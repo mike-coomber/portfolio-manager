@@ -2,10 +2,11 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   setDoc,
 } from "firebase/firestore";
-import { ProjectImageModel } from "../data/project-image-model";
+import { ProjectImageModel } from "../app/editor/models/project-image-model";
 import {
   deleteObject,
   getDownloadURL,
@@ -13,22 +14,28 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
-import { ProjectInterface } from "./interfaces";
-import { ProjectModel, projectModelToFirestore } from "../data/project-model";
+import { ImageInterface, ProjectInterface } from "./interfaces";
+import {
+  EditableProject,
+  projectModelToFirestore,
+} from "../app/editor/models/editable-project";
 import { db, storage } from "@/firebase";
-import { ProjectsContextModel } from "@/context/contexts";
 
 const user = "maddy";
 
-export async function getAllWork(): Promise<ProjectModel[]> {
+export async function getAllProjects(): Promise<ProjectInterface[]> {
   const workCollection = collection(db, "work");
   const docSnapshot = await getDocs(workCollection);
   const docs = docSnapshot.docs;
 
-  return docs.map((doc) => {
-    const data = doc.data() as ProjectInterface;
-    return ProjectModel.fromInterface(doc.id, data);
-  });
+  return docs.map((doc) => doc.data() as ProjectInterface);
+}
+
+export async function getProjectById(id: string): Promise<ProjectInterface> {
+  const docRef = doc(db, "work", id);
+
+  const result = await getDoc(docRef);
+  return result.data() as ProjectInterface;
 }
 
 export async function getImageUrl(url: string): Promise<string> {
@@ -37,7 +44,7 @@ export async function getImageUrl(url: string): Promise<string> {
 
 export async function getAllImages(
   projectId: string
-): Promise<ProjectImageModel[]> {
+): Promise<ImageInterface[]> {
   const storageRef = ref(storage, `maddy/${projectId}`);
 
   const allFiles = await listAll(storageRef);
@@ -53,10 +60,9 @@ export async function getAllImages(
 
 export async function uploadImages(
   projectId: string,
-  files: FileList,
-  onUploadSuccess: (image: ProjectImageModel) => void
-): Promise<void> {
-  const promises: Promise<void>[] = [];
+  files: FileList
+): Promise<ProjectImageModel[]> {
+  const promises: Promise<ProjectImageModel>[] = [];
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
@@ -76,49 +82,26 @@ export async function uploadImages(
         );
         const url = await getImageUrl(uploadTask.ref.fullPath);
         console.log("uploaded", file.name);
-        onUploadSuccess(new ProjectImageModel(file.name, url));
+        return new ProjectImageModel(file.name, url);
       })
     );
   }
 
-  await Promise.all(promises);
+  return await Promise.all(promises);
 }
 
-export async function writeProject(
-  projectModel: ProjectModel,
-  context: ProjectsContextModel
-) {
-  const { allProjects, setAllProjects } = context;
-  console.log(projectModel);
-
+export async function writeProject(projectModel: EditableProject) {
   await setDoc(
     doc(db, `work/${projectModel.id}`),
     projectModelToFirestore(projectModel)
-  ).then(() => {
-    const projectIndex = allProjects.findIndex(
-      (val) => val.id == projectModel.id
-    );
-    const projectsCopy = [...allProjects];
-
-    if (projectIndex > -1) {
-      projectsCopy.splice(projectIndex, 1, projectModel);
-    } else {
-      projectsCopy.push(projectModel);
-    }
-
-    setAllProjects(projectsCopy);
-  });
+  );
+  //TODO refetch data
 }
 
-export async function deleteProject(
-  projectId: string,
-  context: ProjectsContextModel
-): Promise<void> {
-  const { allProjects, setAllProjects } = context;
-
+export async function deleteProject(projectId: string): Promise<void> {
   await deleteDoc(doc(db, `work/${projectId}`));
   await deleteImages(projectId);
-  setAllProjects(allProjects.filter((value) => value.id != projectId));
+  // TODO refetch data
 }
 
 async function deleteImages(projectId: string): Promise<void> {

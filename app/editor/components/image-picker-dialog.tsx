@@ -9,9 +9,9 @@ import {
   Spinner,
 } from "@material-tailwind/react";
 import Image from "next/image";
-import { ImagesContext, ProjectContext } from "../context";
+import { ImagesContext, EditableProjectContext } from "../context";
 import { uploadImages } from "@/api/api";
-import { ProjectImageModel } from "@/data/project-image-model";
+import { ProjectImageModel } from "@/app/editor/models/project-image-model";
 import clsx from "clsx";
 
 interface ImagePickerDialogProps {
@@ -42,7 +42,7 @@ export function ImagePickerDialog({
   imageComponents.push(
     <UploadTile
       key={"upload-tile"}
-      onImageUploaded={(newImage) => setImages([...images, newImage])}
+      onImagesUploaded={(newImages) => setImages([...images, ...newImages])}
     />
   );
 
@@ -56,7 +56,10 @@ export function ImagePickerDialog({
           close
         </span>
       </div>
-      <DialogBody className={`grid grid-cols-4 gap-4`}>
+      <DialogBody
+        className={`grid grid-cols-4 gap-4 overflow-y-scroll`}
+        style={{ maxHeight: "80vh" }}
+      >
         {...imageComponents}
       </DialogBody>
     </Dialog>
@@ -97,18 +100,20 @@ function ImageTile({
 }
 
 function UploadTile({
-  onImageUploaded,
+  onImagesUploaded,
 }: {
-  onImageUploaded: (images: ProjectImageModel) => void;
+  onImagesUploaded: (images: ProjectImageModel[]) => void;
 }) {
   const [loading, setLoading] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { project } = useContext(ProjectContext);
+  const { project } = useContext(EditableProjectContext);
 
   async function uploadFiles(files: FileList) {
     setLoading(true);
-    const imageModels = await uploadImages(project.id, files, onImageUploaded);
+    const imageModels = await uploadImages(project.id, files);
+    console.log("upload finished");
+    onImagesUploaded(imageModels);
     setLoading(false);
   }
 

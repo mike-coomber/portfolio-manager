@@ -1,11 +1,11 @@
 import { Typography } from "@material-tailwind/react";
 import { useContext } from "react";
-import { PageIndexContext, ProjectContext } from "../context";
-import { PageModel } from "@/data/page-model";
+import { PageIndexContext, EditableProjectContext } from "../context";
+import { EditablePage } from "@/app/editor/models/editable-page";
 import clsx from "clsx";
 
 export function PageSelector() {
-  const { project, setProject } = useContext(ProjectContext);
+  const { project, setProject } = useContext(EditableProjectContext);
   const { currentPageIndex, setCurrentPageIndex } =
     useContext(PageIndexContext);
 
@@ -57,7 +57,7 @@ export function PageSelector() {
 }
 
 function NewPageTile() {
-  const { project, setProject } = useContext(ProjectContext);
+  const { project, setProject } = useContext(EditableProjectContext);
   const { setCurrentPageIndex } = useContext(PageIndexContext);
 
   return (
@@ -70,7 +70,7 @@ function NewPageTile() {
           ...project,
           pages: [
             ...project.pages,
-            new PageModel(`${project.id}:${newPageIndex}`),
+            new EditablePage(`${project.id}:${newPageIndex}`),
           ],
         });
         setCurrentPageIndex(newPageIndex);

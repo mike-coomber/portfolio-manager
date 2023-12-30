@@ -1,12 +1,12 @@
-import { ContentType, PageModel } from "@/data/page-model";
-import { ProjectImageModel } from "@/data/project-image-model";
+import { ContentType, EditablePage } from "@/app/editor/models/editable-page";
+import { ProjectImageModel } from "@/app/editor/models/project-image-model";
 import { Button, Typography } from "@material-tailwind/react";
 import Image from "next/image";
 
 import ReactPlayer from "react-player";
 
 interface PageViewerProps {
-  currentPage: PageModel;
+  currentPage: EditablePage;
   contentType: ContentType;
   onImageDeleted: (image: ProjectImageModel) => void;
 }

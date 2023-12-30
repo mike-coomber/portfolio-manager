@@ -1,24 +1,24 @@
 import { Input, Textarea, Typography } from "@material-tailwind/react";
 import { useState, useContext } from "react";
-import { ProjectContext } from "../context";
+import { EditableProjectContext } from "../context";
 import { ImagePickerDialog } from "./image-picker-dialog";
 import Image from "next/image";
 import { ColorPicker } from "./color-picker";
-import { ProjectImageModel } from "@/data/project-image-model";
+import { ProjectImageModel } from "@/app/editor/models/project-image-model";
 
 export function ProjectInfo() {
   const [imagePickerOpen, setImagePickerOpen] = useState(false);
-  const { project, setProject } = useContext(ProjectContext);
+  const { project, setProject } = useContext(EditableProjectContext);
 
   return (
     <form>
-      <div className="p-6 bg-white flex shadow-md">
+      <div className="gap-4 p-6 bg-white flex shadow-md">
         <ImagePicker
           initialImage={project.image}
           onClick={() => setImagePickerOpen(true)}
         />
-        <div className="flex-col flex-1">
-          <div className="flex-3">
+        <div className="flex flex-col  gap-4">
+          <div className="flex gap-2">
             <Input
               label="Name"
               type="text"
@@ -31,8 +31,20 @@ export function ProjectInfo() {
               variant="static"
               crossOrigin={""}
             />
+            <Input
+              type="text"
+              label="Client"
+              name="client"
+              value={project.client}
+              onChange={(event) => {
+                setProject({ ...project, client: event.target.value });
+              }}
+              className="cursor-text"
+              variant="static"
+              crossOrigin={""}
+            />
           </div>
-          <div className="flex-1 mt-4">
+          <div className="flex">
             <Input
               type="text"
               label="Services"
@@ -47,7 +59,7 @@ export function ProjectInfo() {
             />
           </div>
         </div>
-        <div className="flex-1 ml-4 h-max mt-2">
+        <div className="flex flex-1 h-max">
           <Textarea
             name="description"
             label="Description"

@@ -1,17 +1,19 @@
 import { Typography, Button, Radio } from "@material-tailwind/react";
 import { useState, useContext, useEffect } from "react";
-import { PageIndexContext, ProjectContext } from "../context";
+import { PageIndexContext, EditableProjectContext } from "../context";
 import { ImagePickerDialog } from "./image-picker-dialog";
 import { ColorPicker } from "./color-picker";
 import { VideoUrlDialog } from "./video-url-dialog";
-import { ProjectsContext } from "@/context/contexts";
-import { ContentType, PageModel } from "@/data/page-model";
+import { ContentType, EditablePage } from "@/app/editor/models/editable-page";
 import { PageViewer } from "./page-viewer";
+import { EditableProject } from "../models/editable-project";
 
-export function PageEditor() {
-  const { allProjects } = useContext(ProjectsContext);
-
-  const { project, setProject } = useContext(ProjectContext);
+export function PageEditor({
+  initialProject,
+}: {
+  initialProject: EditableProject;
+}) {
+  const { project, setProject } = useContext(EditableProjectContext);
   const { currentPageIndex } = useContext(PageIndexContext);
 
   const [imagePickerOpen, setImagePickerOpen] = useState(false);
@@ -25,7 +27,7 @@ export function PageEditor() {
     setContentType(currentPage.contentType);
   }, [currentPageIndex]);
 
-  function updatePage(newPage: PageModel) {
+  function updatePage(newPage: EditablePage) {
     const newPages = project.pages.filter((val) => val != currentPage);
 
     newPages.splice(currentPageIndex, 0, newPage);
@@ -47,16 +49,11 @@ export function PageEditor() {
   }
 
   function resetColor() {
-    const originalProject = allProjects.find((val) => val.id == project.id);
-    if (originalProject != undefined) {
-      const originalPage = originalProject.pages.find(
-        (val) => val.id == currentPage.id
-      );
-      if (originalPage) {
-        changeColor(originalPage.backgroundColor);
-      } else {
-        changeColor(undefined);
-      }
+    const originalPage = initialProject.pages.find(
+      (val) => val.id == currentPage.id
+    );
+    if (originalPage) {
+      changeColor(originalPage.backgroundColor);
     } else {
       changeColor(undefined);
     }
@@ -116,7 +113,7 @@ export function PageEditor() {
         contentType={contentType}
         onImageDeleted={(image) => {
           const newImages = currentPage.images?.filter((val) => val != image);
-          const newPage: PageModel = {
+          const newPage: EditablePage = {
             ...currentPage,
             images: newImages,
           };
@@ -132,7 +129,7 @@ export function PageEditor() {
         setOpen={setVideoUrlOpen}
         initialUrl={currentPage.videoUrl}
         onUrlSelected={(url) => {
-          const newPage: PageModel = {
+          const newPage: EditablePage = {
             ...currentPage,
             videoUrl: url,
           };
@@ -143,7 +140,7 @@ export function PageEditor() {
         open={imagePickerOpen}
         setOpen={setImagePickerOpen}
         onImageSelected={(newImage) => {
-          const newPage: PageModel = {
+          const newPage: EditablePage = {
             ...currentPage,
             images: [...(currentPage.images ?? []), newImage],
           };

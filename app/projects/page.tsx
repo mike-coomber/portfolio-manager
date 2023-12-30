@@ -1,47 +1,34 @@
-"use client";
-
-import { ReactElement, useContext, useState } from "react";
+import { ReactElement } from "react";
 import { ProjectCard } from "./components/project-card";
-import { NewProjectDialog } from "./components/new-project-dialog";
-import { ProjectsContext } from "@/context/contexts";
+import { NewProjectTile } from "./components/new-project-tile";
+import { getAllProjects } from "@/api/api";
+import { projectImageModelToFirestore } from "@/app/editor/models/project-image-model";
 
-export default function Page() {
-  const [newProjectDialogOpen, setNewProjectDialogOpen] = useState(false);
+export default async function Page() {
+  const allProjects = await getAllProjects();
 
-  const { allProjects } = useContext(ProjectsContext);
-
-  const tiles = allProjects.map((projectModel) => (
-    <ProjectCard key={projectModel.id} data={projectModel} />
+  const tiles = allProjects.map((project) => (
+    <ProjectCard
+      key={project.id}
+      projectName={project.name}
+      projectId={project.id}
+      projectImage={projectImageModelToFirestore(project.image!)}
+    />
   ));
 
-  tiles.push(<NewProjectTile onClick={() => setNewProjectDialogOpen(true)} />);
+  tiles.push(<NewProjectTile />);
 
   return (
-    <>
-      <div className={`grid auto-rows-fr md:grid-cols-3 sm:grid-cols-1 gap-4`}>
-        {tiles.map((tile, index) => (
-          <GridItem key={index}>{tile}</GridItem>
-        ))}
-      </div>
-      <NewProjectDialog
-        open={newProjectDialogOpen}
-        setOpen={setNewProjectDialogOpen}
-      />
-    </>
+    <div
+      className={`grid auto-rows-fr sm:grid-cols-1 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4`}
+    >
+      {tiles.map((tile, index) => (
+        <GridItem key={index}>{tile}</GridItem>
+      ))}
+    </div>
   );
 }
 
 function GridItem({ children }: { children: ReactElement }) {
   return <div className="flex flex-1 p-8">{children}</div>;
-}
-
-function NewProjectTile({ onClick }: { onClick: () => void }) {
-  return (
-    <div
-      className="flex items-center justify-center cursor-pointer w-full h-full border-dashed border-black border-2 rounded-lg  aspect-square"
-      onClick={onClick}
-    >
-      Add Project
-    </div>
-  );
 }

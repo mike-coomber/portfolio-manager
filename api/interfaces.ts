@@ -2,6 +2,7 @@
 
 export interface ProjectInterface {
   name: string;
+  id: string;
   client: string;
   description: string;
   services: string;

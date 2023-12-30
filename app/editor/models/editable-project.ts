@@ -1,12 +1,12 @@
 import { DocumentData, WithFieldValue } from "firebase/firestore";
-import { ProjectInterface } from "../api/interfaces";
-import { PageModel, pageModelToFirestore } from "./page-model";
+import { ProjectInterface } from "../../../api/interfaces";
+import { EditablePage, pageModelToFirestore } from "./editable-page";
 import {
   ProjectImageModel,
   projectImageModelToFirestore,
 } from "./project-image-model";
 
-export class ProjectModel {
+export class EditableProject {
   id: string;
   name: string;
   client: string;
@@ -14,7 +14,7 @@ export class ProjectModel {
   services: string;
   image?: ProjectImageModel;
   backgroundColor?: string;
-  pages: PageModel[];
+  pages: EditablePage[];
 
   constructor(
     id: string,
@@ -22,7 +22,7 @@ export class ProjectModel {
     client: string,
     description: string,
     services: string,
-    pages: PageModel[],
+    pages: EditablePage[],
     image?: ProjectImageModel,
     backgroundColor?: string
   ) {
@@ -36,27 +36,26 @@ export class ProjectModel {
     this.backgroundColor = backgroundColor;
   }
 
-  static fromId(id: string): ProjectModel {
+  static fromId(id: string): EditableProject {
     let name: string = id.replaceAll("-", " ");
     name = name
       .split(" ")
       .map((word) => word.charAt(0).toUpperCase() + word.substring(1))
       .join(" ");
 
-    return new ProjectModel(id, name, "", "", "", [new PageModel(`${id}:0`)]);
+    return new EditableProject(id, name, "", "", "", [
+      new EditablePage(`${id}:0`),
+    ]);
   }
 
-  static fromInterface(
-    id: string,
-    projectInterface: ProjectInterface
-  ): ProjectModel {
-    return new ProjectModel(
-      id,
+  static fromInterface(projectInterface: ProjectInterface): EditableProject {
+    return new EditableProject(
+      projectInterface.id,
       projectInterface.name,
       projectInterface.client,
       projectInterface.description,
       projectInterface.services,
-      projectInterface.pages.map((page) => PageModel.fromInterface(page)),
+      projectInterface.pages.map((page) => EditablePage.fromInterface(page)),
       ProjectImageModel.fromInterface(projectInterface.image),
       projectInterface.backgroundColor
     );
@@ -64,7 +63,7 @@ export class ProjectModel {
 }
 
 export function projectModelToFirestore(
-  project: ProjectModel
+  project: EditableProject
 ): WithFieldValue<DocumentData> {
   // Remove pages with empty content
   const pages = project.pages

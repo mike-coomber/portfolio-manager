@@ -1,5 +1,5 @@
 import { DocumentData, WithFieldValue } from "firebase/firestore";
-import { PageInterface } from "../api/interfaces";
+import { PageInterface } from "../../../api/interfaces";
 import {
   ProjectImageModel,
   projectImageModelToFirestore,
@@ -10,7 +10,7 @@ export enum ContentType {
   video,
 }
 
-export class PageModel {
+export class EditablePage {
   images: ProjectImageModel[] | undefined;
   videoUrl: string | undefined;
   backgroundColor: string | undefined;
@@ -30,8 +30,8 @@ export class PageModel {
     this.contentType = videoUrl ? ContentType.video : ContentType.images;
   }
 
-  static fromInterface(pageInterface: PageInterface): PageModel {
-    return new PageModel(
+  static fromInterface(pageInterface: PageInterface): EditablePage {
+    return new EditablePage(
       pageInterface.id,
       pageInterface.images?.map((image) =>
         ProjectImageModel.fromInterface(image)
@@ -43,7 +43,7 @@ export class PageModel {
 }
 
 export function pageModelToFirestore(
-  page: PageModel
+  page: EditablePage
 ): WithFieldValue<DocumentData> {
   return {
     ...(page.backgroundColor && { backgroundColor: page.backgroundColor }),

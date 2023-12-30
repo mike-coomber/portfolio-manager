@@ -1,4 +1,4 @@
-import { ProjectsContext } from "@/context/contexts";
+import { ProjectInterface } from "@/api/interfaces";
 import {
   Button,
   Dialog,
@@ -14,12 +14,15 @@ import { useContext, useState } from "react";
 interface NewProjectDialogProps {
   open: boolean;
   setOpen: (val: boolean) => void;
+  allProjects: ProjectInterface[];
 }
 
-export function NewProjectDialog({ open, setOpen }: NewProjectDialogProps) {
+export function NewProjectDialog({
+  open,
+  setOpen,
+  allProjects,
+}: NewProjectDialogProps) {
   const router = useRouter();
-
-  const { allProjects } = useContext(ProjectsContext);
 
   const [projectId, setProjectId] = useState("");
   const [error, setError] = useState("");
@@ -43,7 +46,7 @@ export function NewProjectDialog({ open, setOpen }: NewProjectDialogProps) {
     <Dialog open={open} handler={setOpen}>
       <DialogHeader className="pb-0">Create Project</DialogHeader>
       <DialogBody className="flex flex-col">
-        <Typography>Enter an ID for the new project below.</Typography>
+        <Typography>Enter the name for the new project below.</Typography>
         <div className="my-4">
           <Input
             crossOrigin={null}

@@ -1,6 +1,6 @@
 "use client";
 import { Editor } from "@/app/editor/editor";
-import { ProjectModel } from "@/data/project-model";
+import { EditableProject } from "@/app/editor/models/editable-project";
 import { useSearchParams } from "next/navigation";
 
 export default function Page() {
@@ -12,7 +12,7 @@ export default function Page() {
     return <>404</>;
   }
 
-  const newProject = ProjectModel.fromId(id);
+  const newProject = EditableProject.fromId(id);
 
   return <Editor initialProject={newProject} />;
 }
