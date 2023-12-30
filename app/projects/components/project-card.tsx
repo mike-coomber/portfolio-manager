@@ -13,33 +13,39 @@ import { useContext, useState } from "react";
 import { ConfirmationDialog } from "./confirmation-dialog";
 import { deleteProject } from "@/api/api";
 import { ProjectsContext } from "@/context/contexts";
+import toast from "react-hot-toast";
 
 export function ProjectCard({ data }: { data: ProjectModel }) {
   const projectsContext = useContext(ProjectsContext);
 
   const [confimationDialogOpen, setConfimrationDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const size = 350;
+  const size = 300;
 
-  function onDeletePressed() {
-    deleteProject(data.id, projectsContext);
+  async function onDeletePressed() {
+    setLoading(true);
+    await deleteProject(data.id, projectsContext);
+    setLoading(false);
+    toast.success("Project deleted successfully");
   }
 
   return (
     <>
       <Link href={`projects/edit?id=${data.id}`}>
-        <div className="relative shadow-2xl">
+        <div
+          className="relative shadow-2xl aspect-square rounded-lg"
+          // style={{ minWidth: size, minHeight: size }}
+        >
           {data.image != undefined && (
             <Image
-              className="rounded-lg"
+              className="rounded-lg h-full"
               src={data.image?.url}
               alt={`Image for ${data.name}`}
-              width={size}
-              height={size}
+              width={size * 1.5}
+              height={size * 1.5}
               style={{
                 objectFit: "cover",
-                maxHeight: size,
-                maxWidth: size,
               }}
             />
           )}

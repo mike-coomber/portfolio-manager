@@ -1,6 +1,9 @@
 import { DocumentData, WithFieldValue } from "firebase/firestore";
 import { PageInterface } from "../api/interfaces";
-import { ProjectImageModel } from "./project-image-model";
+import {
+  ProjectImageModel,
+  projectImageModelToFirestore,
+} from "./project-image-model";
 
 export enum ContentType {
   images,
@@ -27,19 +30,12 @@ export class PageModel {
     this.contentType = videoUrl ? ContentType.video : ContentType.images;
   }
 
-  static async fromInterface(pageInterface: PageInterface): Promise<PageModel> {
-    const images =
-      pageInterface.images != undefined
-        ? await Promise.all(
-            pageInterface.images.map((location) => {
-              return ProjectImageModel.fromFirebaseLocation(location);
-            })
-          )
-        : undefined;
-
+  static fromInterface(pageInterface: PageInterface): PageModel {
     return new PageModel(
       pageInterface.id,
-      images,
+      pageInterface.images?.map((image) =>
+        ProjectImageModel.fromInterface(image)
+      ),
       pageInterface.videoUrl,
       pageInterface.backgroundColor
     );
@@ -55,7 +51,7 @@ export function pageModelToFirestore(
       page.contentType == ContentType.video && { videoUrl: page.videoUrl }),
     ...(page.images &&
       (page.contentType == ContentType.images || !page.videoUrl) && {
-        images: page.images.map((image) => image.firebaseLocaiton),
+        images: page.images.map((image) => projectImageModelToFirestore(image)),
       }),
   };
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactElement, useContext, useState } from "react";
-import { ProjectCard } from "./components/work-card";
+import { ProjectCard } from "./components/project-card";
 import { NewProjectDialog } from "./components/new-project-dialog";
 import { ProjectsContext } from "@/context/contexts";
 
@@ -18,7 +18,7 @@ export default function Page() {
 
   return (
     <>
-      <div className={`flex`}>
+      <div className={`grid auto-rows-fr md:grid-cols-3 sm:grid-cols-1 gap-4`}>
         {tiles.map((tile, index) => (
           <GridItem key={index}>{tile}</GridItem>
         ))}
@@ -32,17 +32,13 @@ export default function Page() {
 }
 
 function GridItem({ children }: { children: ReactElement }) {
-  return (
-    <div className="flex flex-1 p-8" style={{ maxWidth: 400, maxHeight: 400 }}>
-      {children}
-    </div>
-  );
+  return <div className="flex flex-1 p-8">{children}</div>;
 }
 
 function NewProjectTile({ onClick }: { onClick: () => void }) {
   return (
     <div
-      className="flex items-center justify-center cursor-pointer w-full h-full border-dashed border-black border-2 rounded-lg"
+      className="flex items-center justify-center cursor-pointer w-full h-full border-dashed border-black border-2 rounded-lg  aspect-square"
       onClick={onClick}
     >
       Add Project
