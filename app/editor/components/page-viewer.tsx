@@ -1,7 +1,8 @@
 import { ContentType, EditablePage } from "@/app/editor/models/editable-page";
 import { ProjectImageModel } from "@/app/editor/models/project-image-model";
-import { Button, Typography } from "@material-tailwind/react";
+import { Button, IconButton, Typography } from "@material-tailwind/react";
 import Image from "next/image";
+import { useState } from "react";
 
 import ReactPlayer from "react-player";
 
@@ -47,8 +48,26 @@ export function PageViewer({
         ))}
       {contentType == ContentType.video &&
         currentPage.videoUrl != undefined && (
-          <ReactPlayer url={currentPage.videoUrl} />
+          <VideoPlayer url={currentPage.videoUrl} />
         )}
+    </div>
+  );
+}
+
+function VideoPlayer({ url }: { url: string }) {
+  const [playing, setPlaying] = useState(false);
+
+  return (
+    <div className="flex flex-col gap-4 items-center">
+      <ReactPlayer url={url} playing={playing} loop={true} />
+
+      <div className="flex gap-2">
+        <IconButton onClick={() => setPlaying(!playing)}>
+          <span className="material-symbols-rounded">
+            {playing ? "pause" : "play_arrow"}
+          </span>
+        </IconButton>
+      </div>
     </div>
   );
 }

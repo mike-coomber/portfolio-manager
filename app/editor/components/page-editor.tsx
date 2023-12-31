@@ -25,7 +25,7 @@ export function PageEditor({
 
   useEffect(() => {
     setContentType(currentPage.contentType);
-  }, [currentPageIndex]);
+  }, [currentPageIndex, currentPage.contentType]);
 
   function updatePage(newPage: EditablePage) {
     const newPages = project.pages.filter((val) => val != currentPage);

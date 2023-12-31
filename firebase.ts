@@ -12,10 +12,12 @@ import { getStorage } from "firebase/storage";
 const firebaseConfig = {
   apiKey: "AIzaSyC6lpO2thLQuMfwr8-OVDFBPxKMd6gzUuA",
   authDomain: "portfolio-8d3d7.firebaseapp.com",
+  databaseURL:
+    "https://portfolio-8d3d7-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "portfolio-8d3d7",
   storageBucket: "portfolio-8d3d7.appspot.com",
   messagingSenderId: "11212169547",
-  appId: "1:11212169547:web:9fe614be5465e2bb56c8ce",
+  appId: "1:11212169547:web:a378cf76492fcb1d56c8ce",
 };
 
 // Initialize Firebase

@@ -17,6 +17,15 @@ export function VideoUrlDialog({
   const [url, setUrl] = useState(initialUrl);
   const [error, setError] = useState(false);
 
+  function onSubmit() {
+    if (url && url.length > 0) {
+      onUrlSelected(url);
+      setOpen(false);
+    } else {
+      setError(true);
+    }
+  }
+
   return (
     <Dialog open={open} handler={setOpen} className="p-8 flex ">
       <Input
@@ -29,19 +38,14 @@ export function VideoUrlDialog({
         defaultValue={initialUrl}
         onClick={() => setError(false)}
         error={error}
-      />
-      <Button
-        className="ml-2"
-        onClick={() => {
-          if (url && url.length > 0) {
-            onUrlSelected(url);
-            setOpen(false);
-          } else {
-            setError(true);
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            onSubmit();
           }
         }}
-      >
-        Submit
+      />
+      <Button className="ml-2" onClick={onSubmit}>
+        Add
       </Button>
     </Dialog>
   );

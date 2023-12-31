@@ -19,7 +19,7 @@ export default function Page() {
     if (user) {
       router.push("/projects");
     }
-  }, [user]);
+  }, [user, router]);
 
   async function onLogin() {
     setLoading(true);

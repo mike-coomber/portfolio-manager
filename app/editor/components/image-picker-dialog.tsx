@@ -29,6 +29,7 @@ export function ImagePickerDialog({
 
   const imageComponents = images.map((image) => (
     <ImageTile
+      key={image.name}
       image={image}
       onClick={() => {
         if (onImageSelected != undefined) {
@@ -92,7 +93,7 @@ function ImageTile({
           objectFit: "contain",
         }}
       />
-      <Typography className="flex px-2" style={{ flex: 1 }}>
+      <Typography className="flex px-2 flex-1 overflow-hidden max-w-full">
         {image.name}
       </Typography>
     </div>

@@ -13,7 +13,7 @@ export default function Home() {
     } else {
       router.push("/login");
     }
-  }, [user]);
+  }, [user, router]);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24"></main>

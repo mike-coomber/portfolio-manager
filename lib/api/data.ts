@@ -5,6 +5,9 @@ import {
   getDoc,
   getDocs,
   setDoc,
+  query,
+  onSnapshot,
+  Unsubscribe,
 } from "firebase/firestore";
 import { ProjectImageModel } from "../../app/editor/models/project-image-model";
 import {
@@ -20,15 +23,30 @@ import {
   projectModelToFirestore,
 } from "../../app/editor/models/editable-project";
 import { db, storage } from "@/firebase";
+import toast from "react-hot-toast";
 
 const user = "maddy";
 
-export async function getAllProjects(): Promise<ProjectInterface[]> {
+export async function getProjects(): Promise<ProjectInterface[]> {
   const workCollection = collection(db, "work");
   const docSnapshot = await getDocs(workCollection);
   const docs = docSnapshot.docs;
 
   return docs.map((doc) => doc.data() as ProjectInterface);
+}
+
+export function getProjectsSnapshot(
+  onDataFetched: (data: ProjectInterface[]) => void
+): Unsubscribe {
+  const q = query(collection(db, "work"));
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const results = querySnapshot.docs.map(
+      (doc) => doc.data() as ProjectInterface
+    );
+    onDataFetched(results);
+  });
+
+  return unsubscribe;
 }
 
 export async function getProjectById(id: string): Promise<ProjectInterface> {
@@ -74,15 +92,19 @@ export async function uploadImages(
       contentType: `${file.type}`,
     };
     promises.push(
-      new Promise(async () => {
-        const uploadTask = await uploadBytes(
-          storageRef,
-          await file.arrayBuffer(),
-          metaData
-        );
-        const url = await getImageUrl(uploadTask.ref.fullPath);
-        console.log("uploaded", file.name);
-        return new ProjectImageModel(file.name, url);
+      new Promise<ProjectImageModel>(async (resolve, reject) => {
+        try {
+          const uploadTask = await uploadBytes(
+            storageRef,
+            await file.arrayBuffer(),
+            metaData
+          );
+          const url = await getImageUrl(uploadTask.ref.fullPath);
+          resolve(new ProjectImageModel(file.name, url));
+        } catch (e) {
+          toast.error(`Error uploading ${file.name}`);
+          reject();
+        }
       })
     );
   }

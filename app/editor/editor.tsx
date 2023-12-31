@@ -1,5 +1,6 @@
+"use client";
 import { Button } from "@material-tailwind/react";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ImagesContext,
   PageIndexContext,
@@ -13,12 +14,19 @@ import { getAllImages, writeProject } from "@/lib/api/data";
 import { ProjectImageModel } from "@/app/editor/models/project-image-model";
 import { EditableProject } from "@/app/editor/models/editable-project";
 import toast from "react-hot-toast";
+import { ProjectInterface } from "@/lib/api/interfaces";
 
 export function Editor({
-  initialProject,
+  projectInterface,
+  newProjectId,
 }: {
-  initialProject: EditableProject;
+  projectInterface?: ProjectInterface;
+  newProjectId?: string;
 }) {
+  const initialProject = projectInterface
+    ? EditableProject.fromInterface(projectInterface)
+    : EditableProject.fromId(newProjectId!);
+
   const [project, setProject] = useState<EditableProject>(initialProject);
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -26,7 +34,7 @@ export function Editor({
 
   useEffect(() => {
     getAllImages(project.id).then((images) => setAllImages(images));
-  }, []);
+  }, [project.id]);
 
   function saveProject() {
     const containsContent = project.pages
@@ -34,12 +42,6 @@ export function Editor({
         (page) => (page.images?.length ?? 0) > 0 || page.videoUrl != undefined
       )
       .includes(true);
-
-    console.log(
-      project.pages.map(
-        (page) => (page.images?.length ?? 0) > 0 || page.videoUrl != undefined
-      )
-    );
 
     if (project.image == undefined) {
       toast.error("You must choose an image for the project");

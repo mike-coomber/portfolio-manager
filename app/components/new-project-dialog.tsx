@@ -27,7 +27,7 @@ export function NewProjectDialog({
   const [projectId, setProjectId] = useState("");
   const [error, setError] = useState("");
 
-  function onSumbit() {
+  function onSubmit() {
     const formattedId = formatId();
     if (allProjects.filter((project) => project.id == formattedId).length > 0) {
       setError("ID has already been used");
@@ -57,10 +57,10 @@ export function NewProjectDialog({
               setError("");
               setProjectId(e.target.value);
             }}
-            onSubmit={onSumbit}
+            onSubmit={onSubmit}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                onSumbit();
+                onSubmit();
               }
             }}
           />
@@ -86,7 +86,7 @@ export function NewProjectDialog({
           >
             Cancel
           </Button>
-          <Button onClick={onSumbit}>Create</Button>
+          <Button onClick={onSubmit}>Create</Button>
         </div>
       </DialogBody>
     </Dialog>
