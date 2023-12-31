@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { useContext } from "react";
 import { AuthContext } from "../../lib/providers/auth-provider";
 import { Typography } from "@material-tailwind/react";
+import Link from "next/link";
 
 export default function Header() {
   const router = useRouter();
@@ -23,7 +24,9 @@ export default function Header() {
 
   return (
     <header className="bg-light-blue-700 p-4 text-lg text-white flex justify-between">
-      Portfolio manager
+      <Link href={"/projects"} className="cursor-pointer">
+        Portfolio manager
+      </Link>
       {user && (
         <div className="flex gap-2 items-center">
           <Typography variant="small">{user.email}</Typography>
