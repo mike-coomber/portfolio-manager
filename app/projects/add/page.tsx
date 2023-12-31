@@ -1,12 +1,10 @@
 "use client";
 import { Editor } from "@/app/editor/editor";
+import { useSearchParams } from "next/navigation";
 
-export default function Page({
-  searchParams,
-}: {
-  searchParams: { id: string };
-}) {
-  const id = searchParams.id;
+export default function Page({}: {}) {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
 
   if (id == undefined) {
     return <>404</>;

@@ -48,6 +48,11 @@ export default function Page() {
           label="Password"
           placeholder="Password"
           onChange={(e) => setPassword(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key == "Enter") {
+              onLogin();
+            }
+          }}
           crossOrigin={null}
         />
         <Button onClick={onLogin} loading={loading}>
