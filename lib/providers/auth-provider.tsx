@@ -17,7 +17,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
-        console.log("logged in");
       } else {
         setUser(undefined);
       }

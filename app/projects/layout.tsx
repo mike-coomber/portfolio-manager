@@ -1,15 +1,24 @@
 "use client";
-import { AuthContext } from "@/lib/providers/auth-provider";
+import { auth } from "@/firebase";
 import { useRouter } from "next/navigation";
-import { ReactNode, useContext } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 export default function Layout({ children }: { children: ReactNode }) {
-  const user = useContext(AuthContext);
+  const [loggedIn, setLoggedIn] = useState(false);
   const router = useRouter();
 
-  if (!user) {
-    router.push("/login");
-  }
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        setLoggedIn(true);
+      } else {
+        setLoggedIn(false);
+        router.push("/login");
+      }
+    });
+  }, [router]);
 
-  return children;
+  if (loggedIn) {
+    return children;
+  }
 }

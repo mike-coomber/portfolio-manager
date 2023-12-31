@@ -1,9 +1,5 @@
+"use client";
 import { Editor } from "@/app/editor/editor";
-import {
-  EditableProject,
-  projectModelToFirestore,
-} from "@/app/editor/models/editable-project";
-import { ProjectInterface } from "@/lib/api/interfaces";
 
 export default function Page({
   searchParams,

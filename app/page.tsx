@@ -15,6 +15,10 @@ export default function Home() {
     }
   }, [user, router]);
 
+  if (!user) {
+    return null;
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24"></main>
   );
