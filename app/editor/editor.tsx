@@ -33,7 +33,13 @@ export function Editor({
   const [allImages, setAllImages] = useState<ProjectImageModel[]>([]);
 
   useEffect(() => {
-    getAllImages(project.id).then((images) => setAllImages(images));
+    getAllImages(project.id).then((result) => {
+      if (result.successful && result.data) {
+        setAllImages(result.data);
+      } else {
+        toast.error("Error fetching images");
+      }
+    });
   }, [project.id]);
 
   function saveProject() {
@@ -49,9 +55,13 @@ export function Editor({
       toast.error("At least one page must have content on it.");
     } else {
       setLoading(true);
-      writeProject(project).then(() => {
+      writeProject(project).then((successful) => {
         setLoading(false);
-        toast.success("Project saved successfully");
+        if (successful) {
+          toast.success("Project saved successfully");
+        } else {
+          toast.error("Error saving project");
+        }
       });
     }
   }

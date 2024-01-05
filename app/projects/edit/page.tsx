@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ProjectInterface } from "@/lib/api/interfaces";
 import { Spinner } from "@material-tailwind/react";
 import { useSearchParams } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function Page({}: {}) {
   const [project, setProject] = useState<ProjectInterface>();
@@ -14,9 +15,13 @@ export default function Page({}: {}) {
 
   useEffect(() => {
     if (id) {
-      getProjectById(id).then((project) => {
-        setProject(project);
+      getProjectById(id).then((result) => {
         setLoading(false);
+        if (result.successful) {
+          setProject(result.data);
+        } else {
+          toast.error("Error fetching project");
+        }
       });
     }
   }, [id]);

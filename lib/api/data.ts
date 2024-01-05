@@ -22,23 +22,68 @@ import {
   EditableProject,
   projectModelToFirestore,
 } from "../../app/editor/models/editable-project";
-import { db, storage } from "@/firebase";
+import { auth, db, storage } from "@/firebase";
 import toast from "react-hot-toast";
+import { User } from "firebase/auth";
 
-const user = "maddy";
+class Result<T = undefined> {
+  successful: boolean;
+  data: T | undefined;
 
-export async function getProjects(): Promise<ProjectInterface[]> {
-  const workCollection = collection(db, "work");
-  const docSnapshot = await getDocs(workCollection);
-  const docs = docSnapshot.docs;
+  constructor(successful: boolean, data?: T) {
+    this.successful = successful;
+    this.data = data;
+  }
+}
 
-  return docs.map((doc) => doc.data() as ProjectInterface);
+function getProjectPath(user: User, projectId: string): string {
+  return `${getAllProjectsPath(user)}/${projectId}`;
+}
+
+function getAllProjectsPath(user: User): string {
+  return `${user.email}/projects/all-projects`;
+}
+
+function authenticateUser(): Result<User> {
+  if (auth.currentUser) {
+    return new Result(true, auth.currentUser);
+  } else {
+    return new Result(false);
+  }
+}
+
+export async function getProjects(): Promise<Result<ProjectInterface[]>> {
+  const user = auth.currentUser;
+  if (!user) {
+    return new Result(false);
+  }
+  const projectsCollection = collection(db, getAllProjectsPath(user));
+
+  try {
+    const docSnapshot = await getDocs(projectsCollection);
+    const docs = docSnapshot.docs;
+
+    return new Result(
+      true,
+      docs.map((doc) => doc.data() as ProjectInterface)
+    );
+  } catch (e) {
+    console.error(e);
+    return new Result(false);
+  }
 }
 
 export function getProjectsSnapshot(
   onDataFetched: (data: ProjectInterface[]) => void
-): Unsubscribe {
-  const q = query(collection(db, "work"));
+): Result<Unsubscribe> {
+  const authenticationResult = authenticateUser();
+  const user = authenticationResult.data;
+
+  if (!user || !authenticationResult.successful) {
+    return new Result(false);
+  }
+
+  const q = query(collection(db, getAllProjectsPath(user)));
   const unsubscribe = onSnapshot(q, (querySnapshot) => {
     const results = querySnapshot.docs.map(
       (doc) => doc.data() as ProjectInterface
@@ -46,24 +91,44 @@ export function getProjectsSnapshot(
     onDataFetched(results);
   });
 
-  return unsubscribe;
+  return new Result(true, unsubscribe);
 }
 
-export async function getProjectById(id: string): Promise<ProjectInterface> {
-  const docRef = doc(db, "work", id);
+export async function getProjectById(
+  id: string
+): Promise<Result<ProjectInterface>> {
+  const authenticationResult = authenticateUser();
+  const user = authenticationResult.data;
 
-  const result = await getDoc(docRef);
-  return result.data() as ProjectInterface;
+  if (!user || !authenticationResult.successful) {
+    return new Result(false);
+  }
+
+  const docRef = doc(db, getAllProjectsPath(user), id);
+  try {
+    const result = await getDoc(docRef);
+    return new Result(true, result.data() as ProjectInterface);
+  } catch (e) {
+    console.error(e);
+    return new Result(false);
+  }
 }
 
-export async function getImageUrl(url: string): Promise<string> {
-  return getDownloadURL(ref(storage, url));
+export async function getImageUrl(firebaseLocation: string): Promise<string> {
+  return getDownloadURL(ref(storage, firebaseLocation));
 }
 
 export async function getAllImages(
   projectId: string
-): Promise<ImageInterface[]> {
-  const storageRef = ref(storage, `maddy/${projectId}`);
+): Promise<Result<ImageInterface[]>> {
+  const authenticationResult = authenticateUser();
+  const user = authenticationResult.data;
+
+  if (!user || !authenticationResult.successful) {
+    return new Result(false);
+  }
+
+  const storageRef = ref(storage, `${user.email}/${projectId}`);
 
   const allFiles = await listAll(storageRef);
   const images = await Promise.all(
@@ -73,22 +138,29 @@ export async function getAllImages(
     })
   );
 
-  return images;
+  return new Result(true, images);
 }
 
 export async function uploadImages(
   projectId: string,
   files: FileList
-): Promise<ProjectImageModel[]> {
+): Promise<Result<ProjectImageModel[]>> {
+  const authenticationResult = authenticateUser();
+  const user = authenticationResult.data;
+
+  if (!user || !authenticationResult.successful) {
+    return new Result(false);
+  }
+
   const promises: Promise<ProjectImageModel>[] = [];
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
 
-    const location = `${user}/${projectId}/${file.name}`;
+    const location = `${user.email}/${projectId}/${file.name}`;
 
     const storageRef = ref(storage, location);
-    const metaData = {
+    const metadata = {
       contentType: `${file.type}`,
     };
     promises.push(
@@ -97,7 +169,7 @@ export async function uploadImages(
           const uploadTask = await uploadBytes(
             storageRef,
             await file.arrayBuffer(),
-            metaData
+            metadata
           );
           const url = await getImageUrl(uploadTask.ref.fullPath);
           resolve(new ProjectImageModel(file.name, url));
@@ -109,25 +181,58 @@ export async function uploadImages(
     );
   }
 
-  return await Promise.all(promises);
+  return new Result(true, await Promise.all(promises));
 }
 
-export async function writeProject(projectModel: EditableProject) {
-  await setDoc(
-    doc(db, `work/${projectModel.id}`),
-    projectModelToFirestore(projectModel)
-  );
-  //TODO refetch data
+export async function writeProject(
+  projectModel: EditableProject
+): Promise<Result> {
+  const authenticationResult = authenticateUser();
+  const user = authenticationResult.data;
+
+  if (!user || !authenticationResult.successful) {
+    return new Result(false);
+  }
+
+  try {
+    await setDoc(
+      doc(db, getProjectPath(user, projectModel.id)),
+      projectModelToFirestore(projectModel)
+    );
+    return new Result(true);
+  } catch (e) {
+    console.error(e);
+    return new Result(false);
+  }
 }
 
-export async function deleteProject(projectId: string): Promise<void> {
-  await deleteDoc(doc(db, `work/${projectId}`));
-  await deleteImages(projectId);
-  // TODO refetch data
+export async function deleteProject(projectId: string): Promise<Result> {
+  const authenticationResult = authenticateUser();
+  const user = authenticationResult.data;
+
+  if (!user || !authenticationResult.successful) {
+    return new Result(false);
+  }
+
+  try {
+    await deleteDoc(doc(db, getAllProjectsPath(user)));
+    await deleteImages(projectId);
+    return new Result(true);
+  } catch (e) {
+    console.error(e);
+    return new Result(false);
+  }
 }
 
-async function deleteImages(projectId: string): Promise<void> {
-  const folderRef = ref(storage, `${user}/${projectId}`);
+async function deleteImages(projectId: string): Promise<Result> {
+  const authenticationResult = authenticateUser();
+  const user = authenticationResult.data;
+
+  if (!user || !authenticationResult.successful) {
+    return new Result(false);
+  }
+
+  const folderRef = ref(storage, `${user.email}/${projectId}`);
   const images = await listAll(folderRef);
 
   await Promise.all(
@@ -139,4 +244,6 @@ async function deleteImages(projectId: string): Promise<void> {
         .then(() => console.log(`deleted ${item.fullPath}`));
     })
   );
+
+  return new Result(true);
 }

@@ -1,23 +1,29 @@
 "use client";
 import { ProjectInterface } from "@/lib/api/interfaces";
 import { ProjectCard } from "./project-card";
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useContext, useEffect, useState } from "react";
 import { NewProjectDialog } from "./new-project-dialog";
 import { getProjectsSnapshot } from "@/lib/api/data";
+import { AuthContext } from "@/lib/providers/auth-provider";
 
 export function ProjectsGrid({
   initialProjects,
 }: {
   initialProjects: ProjectInterface[];
 }) {
+  const user = useContext(AuthContext);
+
   const [newProjectDialogOpen, setNewProjectDialogOpen] = useState(false);
   const [projects, setProjects] = useState(initialProjects);
 
   useEffect(() => {
-    const unsubscribe = getProjectsSnapshot((data) => setProjects(data));
-    return () => {
-      unsubscribe();
-    };
+    if (user) {
+      const unsubscribe = getProjectsSnapshot((data) => setProjects(data))
+        .data!;
+      return () => {
+        unsubscribe();
+      };
+    }
   }, []);
 
   const tiles = projects.map((project) => (

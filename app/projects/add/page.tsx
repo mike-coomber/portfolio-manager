@@ -2,7 +2,7 @@
 import { Editor } from "@/app/editor/editor";
 import { useSearchParams } from "next/navigation";
 
-export default function Page({}: {}) {
+export default function Page() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
 

@@ -1,10 +1,7 @@
-import React, { createRef, useContext, useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import {
-  Button,
   Dialog,
-  DialogHeader,
   DialogBody,
-  DialogFooter,
   Typography,
   Spinner,
 } from "@material-tailwind/react";
@@ -13,6 +10,7 @@ import { ImagesContext, EditableProjectContext } from "../context";
 import { uploadImages } from "@/lib/api/data";
 import { ProjectImageModel } from "@/app/editor/models/project-image-model";
 import clsx from "clsx";
+import toast from "react-hot-toast";
 
 interface ImagePickerDialogProps {
   open: boolean;
@@ -112,10 +110,13 @@ function UploadTile({
 
   async function uploadFiles(files: FileList) {
     setLoading(true);
-    const imageModels = await uploadImages(project.id, files);
-    console.log("upload finished");
-    onImagesUploaded(imageModels);
+    const result = await uploadImages(project.id, files);
     setLoading(false);
+    if (result.successful && result.data) {
+      onImagesUploaded(result.data);
+    } else {
+      toast.error("Error uploading images");
+    }
   }
 
   return (
