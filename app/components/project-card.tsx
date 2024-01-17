@@ -24,9 +24,13 @@ export function ProjectCard({
 
   async function onDeletePressed() {
     setLoading(true);
-    await deleteProject(projectId);
+    const result = await deleteProject(projectId);
     setLoading(false);
-    toast.success("Project deleted successfully");
+    if (result.successful) {
+      toast.success("Project deleted successfully");
+    } else {
+      toast.error("Error deleting project");
+    }
   }
 
   return (

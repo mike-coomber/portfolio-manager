@@ -215,7 +215,7 @@ export async function deleteProject(projectId: string): Promise<Result> {
   }
 
   try {
-    await deleteDoc(doc(db, getAllProjectsPath(user)));
+    await deleteDoc(doc(db, getProjectPath(user, projectId)));
     await deleteImages(projectId);
     return new Result(true);
   } catch (e) {
